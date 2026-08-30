@@ -1,0 +1,1500 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    <title>The Star I Am · Mobile</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&display=swap");
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        font-family: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+        color: #fffd;
+      }
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        overscroll-behavior: none;
+      }
+      body {
+        position: relative;
+        display: grid;
+        place-items: center;
+        min-height: 100dvh;
+        touch-action: manipulation;
+        background:
+          radial-gradient(
+            88% 58% at 50% -8%,
+            rgba(120, 137, 255, 0.46) 0%,
+            rgba(76, 91, 190, 0.2) 38%,
+            transparent 72%
+          ),
+          radial-gradient(
+            58% 54% at -10% 76%,
+            rgba(44, 77, 184, 0.48) 0%,
+            rgba(31, 48, 126, 0.18) 42%,
+            transparent 74%
+          ),
+          radial-gradient(
+            55% 52% at 110% 70%,
+            rgba(140, 61, 165, 0.42) 0%,
+            rgba(91, 44, 126, 0.16) 46%,
+            transparent 76%
+          ),
+          radial-gradient(
+            36% 32% at 68% 35%,
+            rgba(255, 167, 222, 0.12) 0%,
+            transparent 72%
+          ),
+          linear-gradient(
+            155deg,
+            #050622 0%,
+            #0a1246 42%,
+            #21133e 72%,
+            #090b2b 100%
+          );
+      }
+      button,
+      input,
+      textarea {
+        font: inherit;
+      }
+      button {
+        color: inherit;
+      }
+      button:focus-visible,
+      a:focus-visible,
+      input:focus-visible,
+      textarea:focus-visible {
+        outline: 3px solid #ffffff;
+        outline-offset: 3px;
+      }
+      .stage {
+        position: relative;
+        z-index: 2;
+        width: min(94vw, calc(94dvh * 9 / 16));
+        aspect-ratio: 9/16;
+        overflow: visible;
+        container-type: inline-size;
+        border-radius: 3.2cqw;
+        isolation: isolate;
+      }
+      .stage::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        border-radius: inherit;
+        background:
+          radial-gradient(
+            90% 58% at 50% 0%,
+            rgba(198, 222, 255, 0.17),
+            transparent 70%
+          ),
+          linear-gradient(
+            155deg,
+            rgba(116, 145, 255, 0.16),
+            rgba(68, 89, 181, 0.11) 48%,
+            rgba(165, 99, 196, 0.14)
+          );
+        box-shadow: 0 3cqw 8cqw #0006;
+        pointer-events: none;
+      }
+      .top-title,
+      .big-title,
+      .center-copy,
+      .start-cta {
+        position: absolute;
+        left: 50%;
+        z-index: 10;
+        text-align: center;
+        transition:
+          opacity 0.45s ease,
+          transform 0.45s ease;
+      }
+      .top-title {
+        top: var(--top-y, 9%);
+        translate: -50% 0;
+        font-size: var(--top-size, 3.1cqw);
+        font-weight: 500;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        white-space: nowrap;
+      }
+      .big-title {
+        top: var(--title-y, 16%);
+        translate: -50% -50%;
+        font-size: var(--title-size, 15.4cqw);
+        font-weight: 400;
+        line-height: 0.84;
+        letter-spacing: -0.055em;
+        white-space: nowrap;
+        color: #ffffffe0;
+        text-shadow:
+          0 0.3cqw 1cqw #0004,
+          0 0 10cqw #fff6;
+      }
+      .center-copy {
+        bottom: var(--copy-bottom, 3.2%);
+        translate: -50% 0;
+        width: var(--copy-width, 88%);
+        font-size: var(--copy-size, 3.15cqw);
+        line-height: var(--copy-line, 1.25);
+        color: #ffffff80;
+      }
+      .start-cta {
+        bottom: var(--start-bottom, 13%);
+        translate: -50% 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--start-gap, 2.5cqw);
+      }
+      .start-btn,
+      .pill {
+        border: 0;
+        border-radius: 999px;
+        cursor: pointer;
+        background: #ffffff8c;
+        border: var(--pill-border, 0.22cqw) solid #ffffff99;
+        box-shadow:
+          0 2.8cqw 6cqw #00000029,
+          inset 0 0.5cqw 1.2cqw #ffffff80;
+        transition: 0.3s ease;
+      }
+      .start-btn {
+        position: relative;
+        min-height: 44px;
+        padding: var(--start-pad, 3.2cqw 10cqw);
+        font-size: var(--start-size, 4.2cqw);
+        font-weight: 500;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        animation: buttonFloat 4s ease-in-out infinite;
+      }
+      .start-btn::after {
+        content: "";
+        position: absolute;
+        inset: -0.8cqw;
+        border: 0.16cqw solid #ffffff66;
+        border-radius: inherit;
+        animation: pulse 3s ease-in-out infinite;
+      }
+      .start-btn:active,
+      .pill:active {
+        scale: 0.97;
+      }
+      @keyframes buttonFloat {
+        50% {
+          translate: 0 -1cqw;
+        }
+      }
+      @keyframes pulse {
+        50% {
+          scale: 1.06;
+          opacity: 0.6;
+        }
+      }
+      .start-hint {
+        font-size: var(--hint-size, 2.1cqw);
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: #ffffff70;
+      }
+      .card {
+        position: absolute;
+        left: var(--x);
+        top: var(--y);
+        z-index: 3;
+        width: var(--card-width, 24.5%);
+        aspect-ratio: 0.64;
+        overflow: hidden;
+        padding: var(--card-pad, 1.5cqw);
+        border: var(--card-border, 0.18cqw) solid #ffffff59;
+        border-radius: var(--card-radius, 1.5cqw);
+        background: #ffffff14;
+        box-shadow:
+          0 2cqw 5cqw #00000026,
+          inset 0 0.6cqw 1.2cqw #ffffff40;
+        transform: rotate(var(--r));
+        transform-origin: center;
+        cursor: pointer;
+        transition:
+          left 0.62s cubic-bezier(0.22, 1, 0.36, 1),
+          top 0.62s cubic-bezier(0.22, 1, 0.36, 1),
+          width 0.62s cubic-bezier(0.22, 1, 0.36, 1),
+          transform 0.62s cubic-bezier(0.22, 1, 0.36, 1),
+          opacity 0.34s ease;
+        contain: layout paint style;
+      }
+      .card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        border-radius: inherit;
+        background: linear-gradient(
+          120deg,
+          #ffffff73,
+          #ffffff14 30%,
+          #ffffff26 60%,
+          #ffffff4d
+        );
+        opacity: 0.6;
+        pointer-events: none;
+      }
+      .card-img {
+        position: absolute;
+        inset: 0 0 15%;
+        width: 100%;
+        height: 85%;
+        object-fit: cover;
+        border-radius: inherit;
+      }
+      .card-text {
+        position:absolute;left:var(--card-text-x,7%);right:var(--card-text-x,7%);bottom:var(--card-text-y,2%);height:11%;z-index:2;
+        display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:var(--card-text-gap,.35cqw);overflow:hidden;letter-spacing:.01em;text-align:left;white-space:nowrap;color:#fff;text-shadow:0 .15cqw .45cqw #17224ed9;opacity:1;transition:opacity .18s ease;
+      }
+      .card-name { font-size:var(--card-name-size,clamp(9px,2.3cqw,12px));font-weight:600;line-height:.82;transition:font-size .62s ease,color .3s ease; }.card-month { font-size:var(--card-month-size,clamp(7px,1.75cqw,10px));font-weight:500;line-height:.82;transition:font-size .62s ease; }
+      body[data-mode="gathering"] .card-text,body[data-mode="returning"] .card-text,body[data-mode="showcase"] .card-text,body[data-mode="detail"] .card-text { opacity:0;transition-delay:0s; }
+      body[data-mode="showcase"] .card.show-center .card-text,body[data-mode="detail"] .card.show-center .card-text { --card-text-gap:.75cqw;opacity:1;transition-delay:0s; }
+      body[data-mode="showcase"] .card.show-prev .card-text,body[data-mode="showcase"] .card.show-next .card-text { opacity:1;transition-delay:0s; }
+      body[data-mode="showcase"] .card.show-center .card-name,body[data-mode="detail"] .card.show-center .card-name { font-size:clamp(16px,3.8cqw,20px);font-weight:700;text-shadow:0 .2cqw .55cqw #17224e; }
+      body[data-mode="showcase"] .card.show-center .card-month,body[data-mode="detail"] .card.show-center .card-month { font-size:clamp(10px,2.3cqw,12px); }
+      body[data-mode="showcase"] .card.show-prev .card-name,body[data-mode="showcase"] .card.show-next .card-name { font-size:clamp(9px,2cqw,11px); }
+      body[data-mode="showcase"] .card.show-prev .card-month,body[data-mode="showcase"] .card.show-next .card-month { font-size:clamp(7.5px,1.6cqw,9px); }
+      body[data-mode="gathering"] .card,
+      body[data-mode="returning"] .card {
+        left: 50%;
+        top: 50%;
+        width: var(--gather-width, 32%);
+        opacity: 1;
+        pointer-events: none;
+        transform: translate(-50%, -50%) rotate(var(--gather-rot));
+      }
+      body[data-mode="gathering"] .top-title,
+      body[data-mode="gathering"] .big-title,
+      body[data-mode="gathering"] .center-copy,
+      body[data-mode="showcase"] .top-title,
+      body[data-mode="showcase"] .big-title,
+      body[data-mode="showcase"] .center-copy,
+      body[data-mode="detail"] .top-title,
+      body[data-mode="detail"] .big-title,
+      body[data-mode="detail"] .center-copy {
+        opacity: 0;
+        pointer-events: none;
+      }
+      body[data-mode="showcase"] .card {
+        pointer-events: none;
+      }
+      body[data-mode="showcase"] .card.show-center,
+      body[data-mode="showcase"] .card.show-prev,
+      body[data-mode="showcase"] .card.show-next,
+      body[data-mode="detail"] .card.show-center {
+        pointer-events: auto;
+      }
+      .card.show-center {
+        left: 50%;
+        top: var(--center-y, 64%);
+        z-index: 8;
+        width: var(--center-width, 50%);
+        transform: translate(-50%, -50%);
+      }
+      .card.show-prev {
+        left: var(--prev-x, -8%);
+        top: var(--side-y, 64%);
+        z-index: 5;
+        width: var(--side-width, 29%);
+        opacity: 0.78;
+        transform: translateY(-50%) rotate(var(--side-rotate, -7deg));
+      }
+      .card.show-next {
+        left: var(--next-x, 81%);
+        top: var(--side-y, 64%);
+        z-index: 5;
+        width: var(--side-width, 29%);
+        opacity: 0.78;
+        transform: translateY(-50%)
+          rotate(calc(0deg - var(--side-rotate, -7deg)));
+      }
+      .card.show-far {
+        left: 50%;
+        top: var(--side-y, 64%);
+        z-index: 1;
+        width: var(--side-width, 27%);
+        opacity: 0;
+        pointer-events: none;
+        transform: translate(-50%, -50%) scale(0.86);
+      }
+      .card.show-center,
+      .card.show-prev,
+      .card.show-next {
+        will-change: transform, opacity;
+      }
+      .showcase {
+        position: absolute;
+        inset: 0;
+        z-index: 20;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.6s ease;
+      }
+      body[data-mode="showcase"] .showcase,
+      body[data-mode="detail"] .showcase {
+        opacity: 1;
+      }
+      .showcase-kicker,
+      .showcase-name,
+      .showcase-rule,
+      .showcase-desc,
+      .nav-arrow,
+      .indicators,
+      .back-gallery,
+      .detail-close {
+        position: absolute;
+      }
+      .showcase-kicker {
+        top: calc(var(--show-kicker-y, 10.5%) + 2.5%);
+        left: 50%;
+        translate: -50% 0;
+        width: 92%;
+        font-size: var(--show-kicker-size, 2.8cqw);
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        line-height: 1.55;
+        text-align: center;
+        white-space: nowrap;
+      }
+      .showcase-name {
+        top: calc(var(--show-name-y, 17%) + 2.5%);
+        left: 50%;
+        translate: -50% -50%;
+        font-size: var(--show-name-size, 13cqw);
+        font-weight: 500;
+        line-height: 0.9;
+        letter-spacing: 0.025em;
+        white-space: nowrap;
+        text-shadow: 0 0.5cqw 1.5cqw #fff8;
+      }
+      .showcase-rule {
+        top: calc(var(--show-rule-y, 23%) + 2.5%);
+        left: 50%;
+        translate: -50% 0;
+        width: var(--rule-width, 8cqw);
+        height: var(--rule-height, 0.32cqw);
+        background: #ffffff66;
+      }
+      .showcase-desc {
+        top: calc(var(--show-desc-y, 26.5%) + 2.5%);
+        left: 50%;
+        translate: -50% 0;
+        width: var(--show-desc-width, 94%);
+        font-size: var(--show-desc-size, 2.3cqw);
+        line-height: var(--show-desc-line, 1.45);
+        text-align: center;
+        white-space: nowrap;
+        color: #ffffff9e;
+      }
+      .showcase-kicker,
+      .showcase-name,
+      .showcase-rule,
+      .showcase-desc {
+        transition:
+          opacity 0.24s ease,
+          transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+      .showcase.text-hidden .showcase-kicker,
+      .showcase.text-hidden .showcase-name,
+      .showcase.text-hidden .showcase-rule,
+      .showcase.text-hidden .showcase-desc {
+        opacity: 0;
+        transform: translateY(0.8cqw);
+      }
+      .explore-btn {
+        position: absolute;
+        left: 50%;
+        bottom: var(--explore-bottom, 61%);
+        translate: -50% 0; min-width: var(--explore-min-width, 28cqw); min-height: var(--explore-min-height, 44px);
+        padding: var(--explore-pad, 2.2cqw 7.2cqw);
+        font-size: var(--explore-size, clamp(13px, 3cqw, 16px));
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        pointer-events: none;
+      }
+      .nav-arrow {
+        top: var(--nav-y, 17%);
+        width: var(--nav-size, 9cqw);
+        height: var(--nav-size, 9cqw);
+        min-width: var(--nav-min, 44px);
+        min-height: var(--nav-min, 44px);
+        border: 0.2cqw solid #ffffffa6;
+        border-radius: 50%;
+        background: #ffffff73;
+        display: grid;
+        place-items: center;
+        cursor: pointer;
+        pointer-events: none;
+        box-shadow: 0 1.6cqw 4cqw #0002;
+      }
+      .nav-arrow.prev {
+        left: 4%;
+      }
+      .nav-arrow.next {
+        right: 4%;
+      }
+      .nav-arrow svg,
+      .mini svg {
+        width: 40%;
+        height: 40%;
+        fill: none;
+        stroke: #000a;
+        stroke-width: 1.8;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .indicators {
+        left: 50%;
+        bottom: var(--dots-bottom, 10%);
+        translate: -50% 0;
+        display: flex;
+        gap: var(--dots-gap, 1.5cqw);
+        pointer-events: none;
+      }
+      body[data-mode="showcase"] :is(.explore-btn,.nav-arrow,.indicators),body[data-mode="detail"] .nav-arrow { pointer-events:auto; }
+      body:not([data-mode="fan"]) .start-cta { pointer-events: none; }
+      .dot {
+        -webkit-appearance: none;
+        appearance: none;
+        width: var(--dot-size, 1.5cqw);
+        height: var(--dot-size, 1.5cqw);
+        padding: 0;
+        border: 0;
+        border-radius: 50%;
+        background: #ffffff35;
+        cursor: pointer;
+        transition: 0.25s ease;
+      }
+      .dot.active {
+        scale: 1.3;
+        background: #ffffffe0;
+      }
+      .back-gallery,
+      .detail-close {
+        top: var(--back-y, 3%);
+        left: 50%;
+        translate: -50% 0;
+        z-index: 45;
+        max-width: 72%;
+        min-width: var(--back-width, 31cqw);
+        min-height: var(--back-height, max(8cqw, 44px));
+        padding: var(--back-pad, 1.7cqw 4cqw);
+        font-size: var(--back-size, 2.45cqw);
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        opacity: 0;
+        pointer-events: none;
+      }
+      body[data-mode="showcase"] .back-gallery,
+      body[data-mode="detail"] .detail-close {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      body[data-mode="detail"] .showcase-kicker,
+      body[data-mode="detail"] .showcase-name,
+      body[data-mode="detail"] .showcase-rule,
+      body[data-mode="detail"] .showcase-desc,
+      body[data-mode="detail"] .explore-btn,
+      body[data-mode="detail"] .indicators {
+        opacity: 0;
+        pointer-events: none;
+      }
+      body[data-mode="detail"] .card.show-prev,
+      body[data-mode="detail"] .card.show-next {
+        opacity: 0;
+        pointer-events: none;
+      }
+      body[data-mode="detail"] .card.show-center {
+        left: var(--detail-card-x, 50%);
+        top: var(--detail-card-y, 65%);
+        width: var(--detail-card-width, 52%);
+        transform: var(--detail-card-transform, translate(-50%, -50%));
+      }
+      .detail {
+        position: absolute;
+        top: var(--detail-y, 11%);
+        left: var(--detail-x, 50%);
+        z-index: 22;
+        width: var(--detail-width, 82%);
+        translate: var(--detail-translate, -50% 0);
+        opacity: 0;
+        pointer-events: none;
+        text-align: var(--detail-align, center);
+        transition: opacity 0.6s ease;
+      }
+      body[data-mode="detail"] .detail {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .detail-kicker {
+        margin-bottom: var(--detail-kicker-margin, 2.5cqw);
+        font-size: var(--detail-kicker-size, 2.75cqw);
+        letter-spacing: 0.32em;
+        text-transform: uppercase;
+        color: #ffffff80;
+      }
+      .detail-name {
+        font-size: var(--detail-name-size, 13cqw);
+        font-weight: 400;
+        line-height: 0.9;
+        letter-spacing: 0.01em;
+        text-shadow: 0 0.5cqw 1.5cqw #fff8;
+      }
+      .detail-rule {
+        width: var(--detail-rule-width, 8cqw);
+        height: var(--detail-rule-height, 0.32cqw);
+        margin: var(--detail-rule-margin, 3cqw auto);
+        background: #0007;
+      }
+      .detail-desc {
+        max-width: var(--detail-desc-width, 74cqw);
+        margin: var(--detail-desc-margin, 0 auto 4cqw);
+        font-size: var(--detail-desc-size, 3.05cqw);
+        line-height: 1.5;
+        color: #ffffff9e;
+      }
+      .detail-actions {
+        display: flex;
+        align-items: center;
+        justify-content: var(--actions-align, center);
+        gap: var(--actions-gap, 2.3cqw);
+      }
+      .learn {
+        min-height: 44px;
+        padding: var(--learn-pad, 2.4cqw 6.2cqw);
+        font-size: var(--learn-size, 2.8cqw);
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+      }
+      .mini {
+        width: var(--mini-size, 8.5cqw);
+        height: var(--mini-size, 8.5cqw);
+        min-width: 44px;
+        min-height: 44px;
+        border: var(--mini-border, 0.18cqw) solid #ffffff8c;
+        border-radius: 50%;
+        background: #ffffff73;
+        display: grid;
+        place-items: center;
+        cursor: pointer;
+      }
+      .next-hint {
+        position: absolute;
+        left: var(--hint-x, 50%);
+        bottom: var(--next-hint-bottom, 4%);
+        z-index: 12;
+        translate: var(--next-hint-translate, -50% 0);
+        font-size: var(--next-hint-size, 2.15cqw);
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: #ffffff70;
+        opacity: 0;
+        pointer-events: none;
+      }
+      body[data-mode="detail"] .next-hint {
+        opacity: 1;
+      }
+      .menu-toggle {
+        position: absolute;
+        top: var(--menu-y, 2.6%);
+        left: 4%;
+        z-index: 40;
+        width: var(--menu-size, 44px);
+        height: var(--menu-size, 44px);
+        padding: var(--menu-pad, 9px);
+        border: 0.15cqw solid #ffffff40;
+        border-radius: 50%;
+        background: #ffffff1f;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 4px;
+        cursor: pointer;
+      }
+      .menu-toggle span {
+        display: block;
+        width: 100%;
+        height: 2px;
+        border-radius: 99px;
+        background: #ffffffe6;
+      }
+      .sound {
+        position: fixed;
+        top: max(10px, env(safe-area-inset-top));
+        right: max(12px, env(safe-area-inset-right));
+        z-index: 30;
+        width: 44px;
+        height: 44px;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+      }
+      .sound svg {
+        width: 100%;
+        height: 100%;
+        overflow: visible;
+        filter: drop-shadow(0 0 0.08cqw #576999b3) drop-shadow(0 0 0.55cqw #bfdcffc7) drop-shadow(0 0 1.2cqw #dac9ff66);
+      }
+      .wave {
+        fill: none;
+        stroke: url(#waveGradient);
+        stroke-width: 1.8;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        transform-origin: center;
+      }
+      .sound.paused .wave {
+        opacity: 0.3;
+      }
+      .sound-state { position:absolute;top:calc(100% + 3px);right:0;min-width:max-content;padding:3px 7px;border:1px solid #ffffff9e;border-radius:999px;background:#ffffff6b;color:#495270d1;font-size:8px;line-height:1;letter-spacing:.12em;white-space:nowrap;pointer-events:none; }.sound-state[data-active="true"] { color:#4e5889f2;background:#ebf4ff9e;box-shadow:0 3px 10px #6989be2e,0 0 10px #d5c5ff52; }
+      .sound.playing .w1 {
+        animation: w1 1.4s ease-in-out infinite;
+      }
+      .sound.playing .w2 {
+        animation: w2 1.9s ease-in-out infinite reverse;
+      }
+      .sound.playing .w3 {
+        animation: w3 2.5s ease-in-out infinite;
+      }
+      .sound.playing .w4 {
+        animation: w4 3.1s ease-in-out infinite reverse;
+      }
+      @keyframes w1 {
+        50% {
+          transform: scale(0.96) rotate(8deg);
+        }
+      }
+      @keyframes w2 {
+        50% {
+          transform: scale(1.08) rotate(-7deg);
+        }
+      }
+      @keyframes w3 {
+        50% {
+          transform: scale(1.2) rotate(6deg);
+        }
+      }
+      @keyframes w4 {
+        50% {
+          transform: scale(1.34) rotate(-5deg);
+        }
+      }
+      .panel {
+        position: absolute;
+        inset: 0 auto 0 0;
+        z-index: 50;
+        width: var(--panel-width, 88%);
+        padding: var(--panel-pad, 8cqw 5cqw 5cqw);
+        overflow-y: auto;
+        border-right: 0.18cqw solid #ffffff59;
+        border-radius: var(--panel-radius, 0 3.2cqw 3.2cqw 0);
+        background: linear-gradient(#f7fafff2, #e6edffed);
+        box-shadow: 3cqw 0 8cqw #0002;
+        translate: -100% 0;
+        opacity: 0;
+        pointer-events: none;
+        transition: 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+      .panel.show {
+        translate: 0;
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .panel-header {
+        position: relative;
+        margin-bottom: var(--panel-head-margin, 5cqw);
+        padding-right: 10cqw;
+      }
+      .panel-kicker,
+      .field label,
+      .saved-kicker,
+      .menu-title {
+        font-size: var(--panel-label-size, 2.45cqw);
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: #ffffff70;
+      }
+      .panel-title {
+        font-size: var(--panel-title-size, 7cqw);
+        font-weight: 500;
+        line-height: 1.05;
+      }
+      .panel-close {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: var(--panel-close-size, 8cqw);
+        height: var(--panel-close-size, 8cqw);
+        min-width: 44px;
+        min-height: 44px;
+        border: 0;
+        border-radius: 50%;
+        background: #ffffff4d;
+        font-size: var(--panel-close-font, 4cqw);
+        cursor: pointer;
+      }
+      .screen.hidden {
+        display: none;
+      }
+      .menu-title {
+        margin-bottom: 3cqw;
+      }
+      .menu-item,
+      .back-link,
+      .save-note {
+        cursor: pointer;
+        min-height: 44px;
+      }
+      .menu-item {
+        width: 100%;
+        margin-bottom: var(--menu-item-margin, 2.2cqw);
+        padding: var(--menu-item-pad, 3.2cqw);
+        border: 0.18cqw solid #ffffff4d;
+        border-radius: var(--field-radius, 2.4cqw);
+        background: #ffffff38;
+        text-align: left;
+        font-size: var(--menu-font, 3.3cqw);
+      }
+      .back-link {
+        margin-bottom: 3cqw;
+        border: 0;
+        background: transparent;
+        font-size: var(--menu-font, 3.3cqw);
+      }
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: var(--field-gap, 1.6cqw);
+        margin-bottom: var(--field-margin, 2.6cqw);
+      }
+      .field input,
+      .field textarea {
+        width: 100%;
+        padding: var(--field-pad, 3.2cqw);
+        border: 0.18cqw solid #ffffff59;
+        border-radius: var(--field-radius, 2.4cqw);
+        outline: 0;
+        background: #ffffff42;
+        font-size: 16px;
+        color: #000b;
+      }
+      .field textarea {
+        min-height: var(--textarea-height, 25cqw);
+        resize: none;
+      }
+      .save-note {
+        padding: 2.4cqw 4.4cqw;
+        border: 0.18cqw solid #ffffff4d;
+        border-radius: 99px;
+        background: #ffffff38;
+        font-size: var(--menu-font, 3.3cqw);
+      }
+      .saved {
+        margin-top: 4cqw;
+        padding-top: 3cqw;
+        border-top: 0.18cqw solid #ffffff4d;
+      }
+      .saved-kicker {
+        margin-bottom: 2cqw;
+      }
+      .saved-list {
+        display: flex;
+        flex-direction: column;
+        gap: 2cqw;
+        max-height: var(--saved-height, 42cqw);
+        overflow: auto;
+      }
+      .saved-item {
+        padding: 2.7cqw;
+        border: 0.18cqw solid #ffffff4d;
+        border-radius: 2.4cqw;
+        background: #ffffff2e;
+      }
+      .saved-stone {
+        font-size: 3.5cqw;
+        font-weight: 600;
+      }
+      .saved-meaning,
+      .saved-memo,
+      .empty {
+        font-size: 3.05cqw;
+        line-height: 1.45;
+        color: #ffffff9e;
+      }
+      .saved-memo {
+        margin: 0.8cqw 0 1.8cqw;
+        white-space: pre-line;
+      }
+      .delete-note {
+        padding: 1cqw 2cqw;
+        border: 0;
+        border-radius: 99px;
+        background: #ffffff4d;
+        font-size: 2.7cqw;
+        cursor: pointer;
+      }
+      #transition {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        background: #000;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.8s ease;
+      }
+      #transition.show {
+        opacity: 1;
+      }
+      /* prettier-ignore */
+      @media all {
+        .start-btn,.pill,.nav-arrow,.mini{color:#000c}.panel{color:#000b}.panel-title,.menu-item,.back-link,.save-note,.saved-stone,.delete-note{color:#000b}.panel-kicker,.field label,.saved-kicker,.menu-title{color:#0007}.saved-meaning,.saved-memo,.empty{color:#0009}.star-overlay{position:fixed;inset:-10%;z-index:1;overflow:hidden;pointer-events:none}.sparkle{position:absolute;width:var(--size);height:var(--size);border-radius:50%;background:#fff;opacity:.14;animation:starTwinkle var(--duration) ease-in-out var(--delay) infinite}.sparkle.medium{box-shadow:0 0 1.2cqw #fff5}.sparkle.glow{background:#ffdff4;box-shadow:0 0 2cqw #ffbde766}body.page-hidden .sparkle{animation-play-state:paused}@keyframes starTwinkle{50%{opacity:var(--peak);transform:translateY(-.45cqw) scale(1.12)}}
+      }
+      @media (orientation: landscape) {
+        body {
+          --top-y: 4%;
+          --top-size: 2cqw;
+          --title-y: 21%;
+          --title-size: 13.8cqw;
+          --copy-bottom: -10%;
+          --copy-width: 100%;
+          --copy-size: 2.5cqw;
+          --copy-line: 1.1;
+          --start-bottom: 0%;
+          --start-gap: 1.2cqw;
+          --start-pad: 12px 36px;
+          --start-size: 14px;
+          --pill-border: 0.12cqw;
+          --hint-size: clamp(8px, 1.5cqw, 10px);
+          --card-width: 20%;
+          --card-pad: 0.8cqw;
+          --card-border: 0.08cqw;
+          --card-radius: 0.6cqw;
+          --card-text-x: 5%;
+          --card-text-y: 2%;
+          --card-name-size: clamp(8px, 1.9cqw, 10px);
+          --card-month-size: clamp(7px, 1.45cqw, 8px);
+          --gather-width: 18%;
+          --center-y: 112%;
+          --center-width: 38.5%;
+          --prev-x: -2%;
+          --next-x: 82%;
+          --side-y: 70%;
+          --side-width: 21.5%;
+          --side-rotate: -6deg;
+          --show-kicker-y: 14%;
+          --show-kicker-size: clamp(10px, 2.1cqw, 12px);
+          --show-name-y: 30%;
+          --show-name-size: 9cqw;
+          --show-rule-y: 42%;
+          --rule-width: 4cqw;
+          --rule-height: 0.15cqw;
+          --show-desc-y: 45%;
+          --show-desc-width: 56%;
+          --show-desc-size: clamp(8px, 1.6cqw, 10px);
+          --show-desc-line: 1.5;
+          --explore-bottom: 20%; --explore-min-width: 22cqw; --explore-min-height: 34px;
+          --explore-pad: 0.8cqw 3.2cqw;
+          --explore-size: clamp(10px, 1.8cqw, 12px);
+          --nav-y: 32%;
+          --nav-size: 44px;
+          --nav-min: 44px;
+          --dots-bottom: 6%;
+          --dots-gap: 0.6cqw;
+          --dot-size: 0.6cqw;
+          --back-y: 3%;
+          --back-width: 82px;
+          --back-height: 30px;
+          --back-pad: 4px 9px;
+          --back-size: 10px;
+          --detail-card-x: 64%;
+          --detail-card-y: 55%;
+          --detail-card-width: 26%;
+          --detail-card-transform: translateY(-50%);
+          --detail-y: 50%;
+          --detail-x: 6%;
+          --detail-width: 50%;
+          --detail-translate: 0 -50%;
+          --detail-align: left;
+          --detail-kicker-margin: 1.4cqw;
+          --detail-kicker-size: clamp(10px, 2cqw, 12px);
+          --detail-name-size: 8.4cqw;
+          --detail-rule-width: 3.6cqw;
+          --detail-rule-height: 0.14cqw;
+          --detail-rule-margin: 1.4cqw 0 1.6cqw;
+          --detail-desc-width: 32cqw;
+          --detail-desc-margin: 0 0 2.2cqw;
+          --detail-desc-size: clamp(9px, 1.6cqw, 11px);
+          --actions-align: flex-start;
+          --actions-gap: 1cqw;
+          --learn-pad: 10px 24px;
+          --learn-size: 13px;
+          --mini-size: 40px;
+          --mini-border: 1px;
+          --hint-x: 64%;
+          --next-hint-bottom: 7%;
+          --next-hint-translate: 0;
+          --next-hint-size: clamp(8px, 1.35cqw, 9px);
+          --menu-y: 4%;
+          --menu-size: 44px;
+          --menu-pad: 10px;
+          --panel-width: min(42cqw, 22rem);
+          --panel-pad: 14px 12px;
+          --panel-radius: 12px;
+          --panel-head-margin: 12px;
+          --panel-label-size: 10px;
+          --panel-title-size: 22px;
+          --panel-close-size: 40px;
+          --panel-close-font: 20px;
+          --menu-item-margin: 7px;
+          --menu-item-pad: 10px 12px;
+          --menu-font: 14px;
+          --field-gap: 6px;
+          --field-margin: 10px;
+          --field-pad: 10px;
+          --field-radius: 10px;
+          --textarea-height: 72px;
+          --saved-height: min(28dvh, 160px);
+        }
+        .stage {
+          width: min(80vw, calc(85dvh * 16 / 9));
+          aspect-ratio: 16/9;
+          translate: 0 -2dvh;
+          border-radius: 1.2cqw;
+        }
+        .center-copy {
+          white-space: nowrap;
+        }
+        .card {
+          left: var(--lx);
+          top: var(--ly);
+          transform: rotate(var(--lr));
+        }
+        .menu-item,
+        .back-link,
+        .save-note {
+          min-height: 44px;
+        }
+        .delete-note {
+          min-height: 40px;
+          padding: 8px 12px;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+          scroll-behavior: auto !important;
+        }
+      }
+    </style>
+  </head>
+  <body data-mode="fan">
+    <div id="transition"></div>
+    <audio id="bgm" loop src="우주 음악.mp3"></audio>
+    <audio id="hoverSfx" preload="auto" src="카드 호버.mp3"></audio>
+    <audio id="openSfx" preload="auto" src="카드 내밈.mp3"></audio>
+    <audio id="closeSfx" preload="auto" src="카드 취소.mp3"></audio>
+    <button type="button" id="sound" class="sound paused" aria-label="배경 음악 켜기" aria-pressed="false"></button>
+    <div class="star-overlay" id="starOverlay"></div>
+    <main class="stage">
+      <button type="button" class="menu-toggle" id="menuToggle" aria-label="메뉴 열기" aria-controls="panel" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <aside class="panel" id="panel" aria-label="메뉴 및 별자리 메모" aria-hidden="true" inert>
+        <header class="panel-header">
+          <div class="panel-kicker">아카이브</div>
+          <h2 class="panel-title">기록 공간</h2>
+          <button type="button" class="panel-close" id="panelClose" aria-label="메뉴 닫기">
+            ×
+          </button>
+        </header>
+        <section class="screen" id="menuScreen">
+          <div class="menu-title">둘러보기</div>
+          <button type="button" class="menu-item" data-go="The_gem_I_am_mobile.html">
+            The Gem I Am</button
+          ><button type="button" class="menu-item" data-go="zodiac_collection_mobile.html">
+            별자리 컬렉션</button
+          ><button type="button" class="menu-item" id="openNotes">별자리 기록</button
+          ><button type="button" class="menu-item" data-go="Zodiac_Fortune_mobile.html">
+            카드 운세 보기</button>
+        </section>
+        <section class="screen hidden" id="notesScreen">
+          <button type="button" class="back-link" id="backMenu">← 메뉴로</button>
+          <div class="field">
+            <label for="stoneName">별자리</label
+            ><input id="stoneName" placeholder="별자리 이름을 적어 주세요" />
+          </div>
+          <div class="field">
+            <label for="stoneMeaning">의미</label
+            ><input
+              id="stoneMeaning"
+              placeholder="인내, 자유, 균형..."
+            />
+          </div>
+          <div class="field">
+            <label for="stoneMemo">메모</label
+            ><textarea
+              id="stoneMemo"
+              placeholder="별자리에 관한 이야기를 기록해 보세요..."
+            ></textarea>
+          </div>
+          <button type="button" class="save-note" id="saveNote">기록 저장</button>
+          <div class="saved">
+            <div class="saved-kicker">저장된 기록</div>
+            <div class="saved-list" id="savedList"></div>
+          </div>
+        </section>
+      </aside>
+      <div class="top-title">Explore Your Birthstar</div>
+      <div class="big-title" id="bigTitle">THE STAR I AM</div>
+      <div class="center-copy" id="centerCopy">
+        Unveil your birthstar, and experience the story written above you.
+      </div>
+      <div class="start-cta" id="startCta">
+        <button type="button" class="start-btn" id="startBtn">Start</button>
+        <div class="start-hint">Discover your star</div>
+      </div>
+      <div id="cards"></div>
+      <section class="showcase">
+        <button type="button" class="back-gallery pill" id="backGallery">← Gallery</button>
+        <div class="showcase-kicker" id="showKicker">
+          12월 22일 – 1월 19일 · 인내 · 야망
+        </div>
+        <div class="showcase-name" id="showName">CAPRICORN</div>
+        <div class="showcase-rule"></div>
+        <p class="showcase-desc" id="showDesc"></p>
+        <button type="button" class="explore-btn pill" id="explore">Explore</button>
+        <button type="button" class="nav-arrow prev" id="prev" aria-label="Previous">
+          <svg viewBox="0 0 24 24"><polyline points="15 6 9 12 15 18" /></svg>
+        </button>
+        <button type="button" class="nav-arrow next" id="next" aria-label="Next">
+          <svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18" /></svg>
+        </button>
+        <div class="indicators" id="indicators"></div>
+      </section>
+      <section class="detail">
+        <div class="detail-kicker" id="detailKicker"></div>
+        <h1 class="detail-name" id="detailName"></h1>
+        <div class="detail-rule"></div>
+        <p class="detail-desc" id="detailDesc"></p>
+        <div class="detail-actions">
+          <button type="button" class="learn pill" id="learn">Learn More</button
+          ><button type="button" class="mini" id="miniPrev" aria-label="Previous">
+            <svg viewBox="0 0 24 24">
+              <polyline points="15 6 9 12 15 18" />
+            </svg></button
+          ><button type="button" class="mini" id="miniNext" aria-label="Next">
+            <svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18" /></svg>
+          </button>
+        </div>
+      </section>
+      <div class="next-hint" id="nextHint"></div>
+      <button type="button" class="detail-close pill" id="detailClose">← Back</button>
+    </main>
+    <script>
+      const $ = (s) => document.querySelector(s),
+        $$ = (s) => [...document.querySelectorAll(s)],
+        body = document.body;
+      const mountParticles = () => {
+        const host = $("#starOverlay"),
+          fragment = document.createDocumentFragment();
+        for (let i = 0; i < 28; i++) {
+          const particle = document.createElement("i"),
+            chance = Math.random();
+          particle.className = `sparkle ${chance > 0.94 ? "glow" : chance > 0.76 ? "medium" : "small"}`;
+          const size =
+            chance > 0.94
+              ? Math.random() * 0.18 + 0.16
+              : Math.random() * 0.1 + 0.05;
+          particle.style.cssText = `left:${Math.random() * 100}%;top:${Math.random() * 100}%;--size:${size}cqw;--duration:${Math.random() * 4 + 4}s;--delay:${Math.random() * -6}s;--peak:${Math.random() * 0.35 + 0.48}`;
+          fragment.appendChild(particle);
+        }
+        host.appendChild(fragment);
+      };
+      const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, 180));
+      idle(mountParticles, { timeout: 1000 });
+      document.addEventListener("visibilitychange", () =>
+        body.classList.toggle("page-hidden", document.hidden),
+      );
+      // prettier-ignore
+      $("#sound").innerHTML=`<svg viewBox="0 0 120 120" aria-hidden="true"><defs><linearGradient id="waveGradient" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#d9c9ff"/><stop offset=".52" stop-color="#b9ddff"/><stop offset="1" stop-color="#fff"/></linearGradient></defs><path id="waveShape" d="M60 18C74 18 84 24 91 34c8 11 11 22 10 34-1 14-8 26-20 33-12 7-27 8-39 3-12-5-21-15-24-28-3-13-1-27 6-38 7-11 20-19 36-20Z" fill="none"/><use href="#waveShape" class="wave w1"/><use href="#waveShape" class="wave w2" opacity=".8"/><use href="#waveShape" class="wave w3" opacity=".55"/><use href="#waveShape" class="wave w4" opacity=".35"/></svg><span class="sound-state" id="soundState" data-active="false">MUSIC OFF</span>`;
+      // prettier-ignore
+      const stones=[
+      ["Garnet_star_mobile_info.html","CAPRICORN","12월 22일 – 1월 19일","인내 · 야망","염소자리는 묵묵한 인내와 단단한 책임감으로 목표를 향해 나아갑니다.","./염소자리.jpg","Capricorn","Dec 22 - Jan 19"],
+      ["Amethyst_star_mobile_info.html","AQUARIUS","1월 20일 – 2월 18일","독창성 · 비전","물병자리는 독창적인 시선과 자유로운 생각으로 새로운 가능성을 발견합니다.","./물병자리.jpg","Aquarius","Jan 20 - Feb 18"],
+      ["Aquamarine_star_mobile_info.html","PISCES","2월 19일 – 3월 20일","직감 · 상상","물고기자리는 섬세한 직감과 풍부한 상상력으로 마음의 결을 읽습니다.","./물고기자리.jpg","Pisces","Feb 19 - Mar 20"],
+      ["Diamond_star_mobile_info.html","ARIES","3월 21일 – 4월 19일","용기 · 시작","양자리는 망설임 없는 용기와 뜨거운 추진력으로 새로운 시작을 이끕니다.","./양자리.jpg","Aries","Mar 21 - Apr 19"],
+      ["Emerald_star_mobile_info.html","TAURUS","4월 20일 – 5월 20일","안정 · 감각","황소자리는 안정된 감각과 끈기로 자신만의 평온한 세계를 지켜갑니다.","./황소자리.jpg","Taurus","Apr 20 - May 20"],
+      ["Pearl_star_mobile_info.html","GEMINI","5월 21일 – 6월 20일","호기심 · 표현","쌍둥이자리는 재치 있는 대화와 끝없는 호기심으로 세상을 탐색합니다.","./쌍둥이자리.jpg","Gemini","May 21 - Jun 20"],
+      ["Ruby_star_mobile_info.html","CANCER","6월 21일 – 7월 22일","공감 · 보호","게자리는 따뜻한 공감과 깊은 보호 본능으로 소중한 사람을 품습니다.","./게자리.jpg","Cancer","Jun 21 - Jul 22"],
+      ["Peridot_star_mobile_info.html","LEO","7월 23일 – 8월 22일","자신감 · 열정","사자자리는 밝은 자신감과 다정한 열정으로 주변에 빛을 더합니다.","./사자자리.jpg","Leo","Jul 23 - Aug 22"],
+      ["Sapphire_star_mobile_info.html","VIRGO","8월 23일 – 9월 22일","세심함 · 헌신","처녀자리는 세심한 관찰과 성실한 배려로 작은 혼란을 질서로 바꿉니다.","./처녀자리.jpg","Virgo","Aug 23 - Sep 22"],
+      ["Opal_star_mobile_info.html","LIBRA","9월 23일 – 10월 22일","균형 · 조화","천칭자리는 균형 잡힌 시선과 우아한 감각으로 관계의 조화를 만듭니다.","./천칭자리.jpg","Libra","Sep 23 - Oct 22"],
+      ["Topaz_star_mobile_info.html","SCORPIO","10월 23일 – 11월 21일","집중 · 변화","전갈자리는 강렬한 직관과 깊은 집중력으로 숨은 진실을 마주합니다.","./전갈자리.jpg","Scorpio","Oct 23 - Nov 21"],
+      ["Turquoise_star_mobile_info.html","SAGITTARIUS","11월 22일 – 12월 21일","자유 · 모험","사수자리는 자유로운 낙관과 모험심으로 더 넓은 세계를 향해 나아갑니다.","./사수자리.jpg","Sagittarius","Nov 22 - Dec 21"]
+    ];
+      const fan = [
+        [0, 28, -10, -10, 46, -8],
+        [15.6, 25, -7, 0, 26, -25],
+        [31.2, 27, -3, 9, 42, -10],
+        [46.8, 25, 3, 18, 22, 0],
+        [62.4, 27, 7, 27, 44, -5],
+        [78, 29, 10, 36, 33, 0],
+        [0, 51, -9, 47, 27, 0],
+        [15.6, 48, -6, 56, 44, 5],
+        [31.2, 50, -2, 65, 22, 0],
+        [46.8, 48, 3, 74, 42, 10],
+        [62.4, 50, 6, 83, 26, 25],
+        [78, 52, 9, 90, 46, 8],
+      ];
+      const cardsBox = $("#cards");
+      cardsBox.innerHTML = stones
+        .map(
+          (s, i) =>
+            `<button type="button" class="card" style="--x:${fan[i][0]}%;--y:${fan[i][1]}%;--r:${fan[i][2]}deg;--lx:${fan[i][3]}%;--ly:${fan[i][4]}%;--lr:${fan[i][5]}deg" data-i="${i}" aria-label="${s[6]} ${s[7] || s[2]} 카드 자세히 보기" disabled><img class="card-img" src="${s[5]}" alt="" decoding="async"><span class="card-text"><span class="card-name">${s[6]}</span><span class="card-month">${s[7] || s[2]}</span></span></button>`,
+        )
+        .join("");
+      const cards = $$(".card"),
+        ids = [
+          "showKicker",
+          "showName",
+          "showDesc",
+          "detailKicker",
+          "detailName",
+          "detailDesc",
+          "nextHint",
+        ].reduce((o, id) => ((o[id] = $("#" + id)), o), {});
+      const showcase = $(".showcase");
+      let current = 0,
+        animating = false,
+        playing = false,
+        hasInteracted = false,
+        textTimer;
+      const sounds = {
+        bgm: $("#bgm"),
+        hover: $("#hoverSfx"),
+        open: $("#openSfx"),
+        close: $("#closeSfx"),
+      };
+      const play = (audio, volume) => {
+        audio.currentTime = 0;
+        audio.volume = volume;
+        audio.play().catch(() => {});
+      };
+      const setSound = (on) => {
+        $("#sound").classList.toggle("playing", on);
+        $("#sound").classList.toggle("paused", !on);
+        $("#sound").setAttribute("aria-pressed", String(on));
+        $("#sound").setAttribute("aria-label", on ? "배경 음악 끄기" : "배경 음악 켜기");
+        $("#soundState").textContent = on ? "MUSIC ON" : "MUSIC OFF";
+        $("#soundState").dataset.active = String(on);
+      };
+      const startBgm = async () => {
+        sounds.bgm.volume = 0.15;
+        try {
+          await sounds.bgm.play();
+          playing = true;
+          setSound(true);
+        } catch {
+          playing = false;
+          setSound(false);
+        }
+      };
+      document.addEventListener(
+        "click",
+        () => {
+          if (hasInteracted) return;
+          hasInteracted = true;
+          if (!playing) startBgm();
+        },
+        { once: true },
+      );
+      $("#sound").onclick = async (e) => {
+        e.stopPropagation();
+        hasInteracted = true;
+        if (sounds.bgm.paused) {
+          await startBgm();
+        } else {
+          sounds.bgm.pause();
+          playing = false;
+          setSound(false);
+        }
+      };
+      const update = (index) => {
+        const total = cards.length,
+          prev = (index - 1 + total) % total,
+          next = (index + 1) % total;
+        cards.forEach((card, i) => {
+          card.className = "card";
+          card.disabled = ![index, prev, next].includes(i);
+          card.setAttribute("aria-current", i === index ? "true" : "false");
+          card.style.removeProperty("left");
+          card.style.removeProperty("top");
+          card.style.removeProperty("width");
+          card.style.removeProperty("opacity");
+          card.style.removeProperty("z-index");
+          card.style.removeProperty("transform");
+          if (i === index) card.classList.add("show-center");
+          else if (i === prev) card.classList.add("show-prev");
+          else if (i === next) card.classList.add("show-next");
+          else card.classList.add("show-far");
+        });
+        const s = stones[index],
+          n = stones[next];
+        ids.showKicker.textContent =
+          ids.detailKicker.textContent = `${s[2]} · ${s[3]}`;
+        ids.showName.textContent = ids.detailName.textContent = s[1];
+        ids.showDesc.textContent = ids.detailDesc.textContent = s[4];
+        ids.nextHint.textContent = `NEXT · ${n[1]}`;
+        $$(".dot").forEach((dot, i) => {
+          dot.classList.toggle("active", i === index);
+          dot.setAttribute("aria-current", i === index ? "true" : "false");
+        });
+      };
+      const revealText = () => {
+        requestAnimationFrame(() =>
+          requestAnimationFrame(() => showcase.classList.remove("text-hidden")),
+        );
+      };
+      const go = (dir) => {
+        if (animating || !["showcase", "detail"].includes(body.dataset.mode))
+          return;
+        animating = true;
+        clearTimeout(textTimer);
+        showcase.classList.add("text-hidden");
+        const nextIndex = (current + dir + cards.length) % cards.length;
+        play(sounds.hover, 0.35);
+        textTimer = setTimeout(() => {
+          current = nextIndex;
+          update(current);
+          revealText();
+        }, 140);
+        setTimeout(() => (animating = false), 680);
+      };
+      $("#startBtn").onclick = () => {
+        if (animating || body.dataset.mode !== "fan") return;
+        animating = true;
+        play(sounds.open, 0.45);
+        $("#startCta").style.opacity = 0;
+        $("#bigTitle").style.opacity = 0;
+        $("#centerCopy").style.opacity = 0;
+        cards.forEach((card, i) => {
+          card.style.setProperty("--gather-rot", `${(i - 5.5) * 1.6}deg`);
+          card.style.zIndex = 3 + i;
+        });
+        showcase.classList.add("text-hidden");
+        requestAnimationFrame(() => (body.dataset.mode = "gathering"));
+        setTimeout(() => {
+          body.dataset.mode = "showcase";
+          current = 0;
+          update(0);
+          revealText();
+          animating = false;
+        }, 760);
+      };
+      $("#indicators").innerHTML = stones
+        .map(
+          (_, i) =>
+            `<button type="button" class="dot${i ? "" : " active"}" data-i="${i}" aria-label="${stones[i][6]} 카드 보기"></button>`,
+        )
+        .join("");
+      $("#indicators").onclick = (e) => {
+        const dot = e.target.closest(".dot");
+        if (!dot || body.dataset.mode !== "showcase" || animating) return;
+        animating = true;
+        clearTimeout(textTimer);
+        showcase.classList.add("text-hidden");
+        const nextIndex = +dot.dataset.i;
+        play(sounds.hover, 0.35);
+        textTimer = setTimeout(() => {
+          current = nextIndex;
+          update(current);
+          revealText();
+        }, 140);
+        setTimeout(() => (animating = false), 680);
+      };
+      $("#prev").onclick = $("#miniPrev").onclick = () => go(-1);
+      $("#next").onclick = $("#miniNext").onclick = () => go(1);
+      cardsBox.onclick = (e) => {
+        const card = e.target.closest(".card");
+        if (!card || animating) return;
+        if (body.dataset.mode === "showcase") {
+          if (card.classList.contains("show-prev")) go(-1);
+          else if (card.classList.contains("show-next")) go(1);
+          else if (card.classList.contains("show-center")) openDetail();
+        } else if (
+          body.dataset.mode === "detail" &&
+          card.classList.contains("show-center")
+        )
+          navigate();
+      };
+      const openDetail = () => {
+        if (animating || body.dataset.mode !== "showcase") return;
+        animating = true;
+        play(sounds.open, 0.45);
+        body.dataset.mode = "detail";
+        setTimeout(() => (animating = false), 480);
+      };
+      const closeDetail = () => {
+        if (animating) return;
+        animating = true;
+        play(sounds.close, 1);
+        body.dataset.mode = "showcase";
+        setTimeout(() => (animating = false), 480);
+      };
+      $("#explore").onclick = openDetail;
+      $("#detailClose").onclick = closeDetail;
+      const navigate = () => {
+        const link = stones[current][0];
+        if (!link) return;
+        $("#transition").classList.add("show");
+        play(sounds.open, 0.45);
+        setTimeout(() => (location.href = link), 800);
+      };
+      $("#learn").onclick = navigate;
+      $("#backGallery").onclick = () => {
+        if (animating) return;
+        animating = true;
+        play(sounds.close, 1);
+        cards.forEach((card, i) => {
+          card.className = "card";
+          card.style.setProperty("--gather-rot", `${(i - 5.5) * 2}deg`);
+          card.style.opacity = 1;
+          card.style.zIndex = 20 + i;
+        });
+        body.dataset.mode = "returning";
+        setTimeout(() => {
+          body.dataset.mode = "fan";
+          cards.forEach((card) => {
+            card.disabled = true;
+            card.setAttribute("aria-current", "false");
+            ["left", "top", "width", "opacity", "z-index", "transform"].forEach(
+              (p) => card.style.removeProperty(p),
+            );
+          });
+          Object.assign($("#startCta").style, { display: "flex", opacity: 1 });
+          $("#bigTitle").style.opacity = "";
+          $("#centerCopy").style.opacity = "";
+          animating = false;
+        }, 620);
+      };
+      const panel = $("#panel"),
+        menu = $("#menuScreen"),
+        notes = $("#notesScreen");
+      const setPanelOpen = (open) => {
+        panel.classList.toggle("show", open);
+        panel.toggleAttribute("inert", !open);
+        panel.setAttribute("aria-hidden", String(!open));
+        $("#menuToggle").setAttribute("aria-expanded", String(open));
+        $("#menuToggle").setAttribute("aria-label", open ? "메뉴 닫기" : "메뉴 열기");
+        if (open) $("#panelClose").focus();
+        else $("#menuToggle").focus();
+      };
+      $("#menuToggle").onclick = () => setPanelOpen(!panel.classList.contains("show"));
+      $("#panelClose").onclick = () => setPanelOpen(false);
+      panel.onclick = (e) => {
+        const go = e.target.closest("[data-go]");
+        if (go) location.href = go.dataset.go;
+      };
+      $("#openNotes").onclick = () => {
+        menu.classList.add("hidden");
+        notes.classList.remove("hidden");
+        $("#stoneName").focus();
+      };
+      $("#backMenu").onclick = () => {
+        notes.classList.add("hidden");
+        menu.classList.remove("hidden");
+        $("#openNotes").focus();
+      };
+      document.onkeydown = (e) => {
+        const isEditing = e.target.matches("input, textarea");
+        if (!isEditing && e.key === "ArrowLeft") go(-1);
+        if (!isEditing && e.key === "ArrowRight") go(1);
+        if (e.key === "Escape") {
+          if (panel.classList.contains("show")) setPanelOpen(false);
+          else if (body.dataset.mode === "detail") closeDetail();
+          else if (body.dataset.mode === "showcase") $("#backGallery").click();
+        }
+      };
+      const MAX_NOTES = 20,
+        key = "birthstarNotes",
+        fields = [$("#stoneName"), $("#stoneMeaning"), $("#stoneMemo")],
+        loadNotes = () => {
+          try {
+            const saved = JSON.parse(localStorage.getItem(key));
+            return Array.isArray(saved) ? saved.slice(0, MAX_NOTES) : [];
+          } catch {
+            return [];
+          }
+        },
+        saveNotes = (notesToSave) => {
+          try {
+            localStorage.setItem(key, JSON.stringify(notesToSave.slice(0, MAX_NOTES)));
+            return true;
+          } catch {
+            return false;
+          }
+        },
+        esc = (s) =>
+          String(s || "-").replace(
+            /[&<>"']/g,
+            (c) =>
+              ({
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#39;",
+              })[c],
+          );
+      const renderNotes = () => {
+        const list = loadNotes();
+        $("#savedList").innerHTML = list.length
+          ? list
+              .map(
+                (n, i) =>
+                  `<article class="saved-item"><div class="saved-stone">${esc(n.name)}</div><div class="saved-meaning">${esc(n.meaning)}</div><div class="saved-memo">${esc(n.memo)}</div><button type="button" class="delete-note" data-delete="${i}">삭제</button></article>`,
+              )
+              .join("")
+          : '<div class="empty">아직 저장된 기록이 없습니다.</div>';
+      };
+      $("#saveNote").onclick = () => {
+        const [name, meaning, memo] = fields.map((f) => f.value.trim());
+        if (!name && !meaning && !memo) return;
+        const list = loadNotes();
+        list.unshift({ name, meaning, memo });
+        if (!saveNotes(list)) return;
+        fields.forEach((f) => (f.value = ""));
+        renderNotes();
+      };
+      $("#savedList").onclick = (e) => {
+        const b = e.target.closest("[data-delete]");
+        if (!b) return;
+        const list = loadNotes();
+        list.splice(+b.dataset.delete, 1);
+        saveNotes(list);
+        renderNotes();
+      };
+      renderNotes();
+    </script>
+  </body>
+</html>
