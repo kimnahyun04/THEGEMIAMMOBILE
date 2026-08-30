@@ -1,0 +1,1415 @@
+<!DOCTYPE html><html lang="ko"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <meta name="theme-color" content="#ffe6f1">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&amp;family=Jost:wght@200;300;400;500&amp;display=swap" rel="stylesheet">
+    
+    
+    <title>Ruby · Mobile Info</title>
+    <style>
+        :root {
+            --accent: #ff8fbc
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        html,
+        body {
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #000;
+            font-family: "Cormorant Garamond", serif
+        }
+
+        button {
+            font: inherit
+        }
+
+        .viewport,
+        .game-container {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #000
+        }
+
+        .game-container {
+            position: relative
+        }
+
+        .top-nav {
+            position: absolute;
+            top: max(1rem, env(safe-area-inset-top));
+            left: 1rem;
+            z-index: 80;
+            display: flex;
+            flex-direction: column;
+            gap: .55rem;
+            align-items: flex-start
+        }
+
+        .menu-toggle-btn {
+            position: relative;
+            width: 2.8rem;
+            height: 2.8rem;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+            background: rgba(28, 4, 12, .42);
+            border: 1px solid rgba(255, 255, 255, .18);
+            box-shadow: 0 0 18px rgba(235, 70, 130, .16);
+            color: #fff
+        }
+
+        .menu-toggle-btn:before {
+            content: "";
+            width: .82rem;
+            height: .82rem;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 12px rgba(255, 145, 185, .58)
+        }
+
+        .menu-toggle-btn span {
+            position: absolute;
+            width: 1rem;
+            height: 1px;
+            background: rgba(255, 245, 248, .9);
+            transition: .25s
+        }
+
+        .menu-toggle-btn span:first-child {
+            transform: translateY(-.3rem)
+        }
+
+        .menu-toggle-btn span:last-child {
+            transform: translateY(.3rem)
+        }
+
+        .top-nav.open .menu-toggle-btn span:first-child {
+            transform: rotate(45deg)
+        }
+
+        .top-nav.open .menu-toggle-btn span:nth-child(2) {
+            opacity: 0
+        }
+
+        .top-nav.open .menu-toggle-btn span:last-child {
+            transform: rotate(-45deg)
+        }
+
+        .nav-menu {
+            min-width: 11rem;
+            padding: .8rem;
+            border-radius: 1rem;
+            display: grid;
+            gap: .45rem;
+            background: rgba(28, 4, 12, .86);
+            border: 1px solid rgba(255, 255, 255, .12);
+            opacity: 0;
+            transform: translateY(-6px) scale(.97);
+            pointer-events: none;
+            transition: .25s
+        }
+
+        .top-nav.open .nav-menu {
+            opacity: 1;
+            transform: none;
+            pointer-events: auto
+        }
+
+        .nav-link {
+            width: 100%;
+            padding: .52rem .65rem;
+            border: 0;
+            border-radius: 999px;
+            background: transparent;
+            font-family: "Jost", sans-serif;
+            font-size: .72rem;
+            letter-spacing: .14em;
+            text-align: left;
+            color: rgba(255, 215, 228, .88);
+            cursor: pointer
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, .07);
+            color: #fff
+        }
+
+        .transition-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            background: #000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .55s
+        }
+
+        .transition-overlay.show {
+            opacity: 1
+        }
+
+        .mode-toggle {
+            position: absolute;
+            top: max(1rem, env(safe-area-inset-top));
+            right: max(1rem, env(safe-area-inset-right));
+            z-index: 85;
+            width: 3.35rem;
+            height: 1.72rem;
+            padding: 0;
+            border-radius: 999px;
+            cursor: pointer;
+            background: rgba(255, 255, 255, .62);
+            border: 1px solid rgba(255, 255, 255, .16);
+            box-shadow: 0 8px 24px rgba(110, 16, 52, .1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: background .25s ease, border-color .25s ease
+        }
+
+        .mode-toggle.active {
+            background: rgba(55, 8, 25, .42);
+            border-color: rgba(255, 143, 188, .3)
+        }
+
+        .toggle-knob {
+            position: absolute;
+            top: 50%;
+            left: .18rem;
+            width: 1.28rem;
+            height: 1.28rem;
+            border-radius: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, .96);
+            box-shadow: 0 2px 8px rgba(110, 16, 52, .18);
+            transition: left .28s ease, background .28s ease, box-shadow .28s ease
+        }
+
+        .mode-toggle.active .toggle-knob {
+            left: 1.88rem;
+            background: var(--accent);
+            box-shadow: 0 0 12px rgba(255, 143, 188, .58)
+        }
+
+        .modal {
+            position: fixed;
+            inset: 0;
+            z-index: 90;
+            opacity: 0;
+            pointer-events: none;
+            transition: .28s
+        }
+
+        .modal.show {
+            opacity: 1;
+            pointer-events: auto
+        }
+
+        .backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(26, 3, 10, .88)
+        }
+
+        .round-close {
+            display: grid;
+            place-items: center;
+            padding: 0;
+            border: 1px solid rgba(255, 255, 255, .15);
+            background: rgba(30, 5, 14, .72);
+            color: #fff;
+            border-radius: 50%;
+            font-family: "Jost", sans-serif;
+            font-size: 1.5rem;
+            font-weight: 300;
+            line-height: 1;
+            cursor: pointer
+        }
+
+        .desc-close-btn,
+        .card-detail-close,
+        .menu-tarot-close {
+            width: 2.35rem;
+            height: 2.35rem
+        }
+
+        .tarot-panel {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            z-index: 1;
+            width: min(90vw, 46rem);
+            transform: translate(-50%, -50%) scale(.96);
+            padding: 2rem;
+            border-radius: 1.2rem;
+            background: rgba(48, 6, 18, .96);
+            border: 1px solid rgba(255, 145, 185, .18);
+            text-align: center;
+            transition: .28s
+        }
+
+        .modal.show .tarot-panel {
+            transform: translate(-50%, -50%) scale(1)
+        }
+
+        .menu-tarot-close {
+            position: absolute;
+            right: .8rem;
+            top: .8rem
+        }
+
+        .menu-tarot-kicker {
+            font-family: "Jost", sans-serif;
+            font-size: .58rem;
+            letter-spacing: .28em;
+            color: rgba(255, 145, 185, .64)
+        }
+
+        .menu-tarot-title {
+            margin: .5rem 0 0;
+            font-size: 2rem;
+            font-weight: 300;
+            color: #ffebf2
+        }
+
+        .menu-tarot-desc {
+            margin: .7rem 0 1.4rem;
+            color: rgba(255, 215, 228, .7)
+        }
+
+        .menu-tarot-cards {
+            display: flex;
+            justify-content: center;
+            gap: 1rem
+        }
+
+        .menu-tarot-card {
+            width: 8rem;
+            height: 11.5rem;
+            border-radius: .85rem;
+            border: 1px solid rgba(255, 145, 185, .32);
+            background: linear-gradient(180deg, rgba(255, 145, 185, .74), rgba(220, 45, 105, .6));
+            color: #fff;
+            cursor: pointer;
+            transition: .25s
+        }
+
+        .menu-tarot-card span {
+            display: block;
+            margin-bottom: 3rem;
+            font-size: 1.8rem
+        }
+
+        .menu-tarot-card em {
+            font-family: "Jost", sans-serif;
+            font-size: .52rem;
+            letter-spacing: .22em;
+            font-style: normal
+        }
+
+        .menu-tarot-card.picked {
+            transform: translateY(-6px) scale(1.03)
+        }
+
+        .menu-tarot-card.dimmed {
+            opacity: .25;
+            pointer-events: none
+        }
+
+        .menu-tarot-result {
+            min-height: 4rem;
+            margin-top: 1rem;
+            opacity: 0;
+            transform: translateY(8px);
+            color: rgba(255, 215, 228, .82);
+            line-height: 1.65;
+            transition: .3s
+        }
+
+        .menu-tarot-result.show {
+            opacity: 1;
+            transform: none
+        }
+
+        .menu-tarot-result strong {
+            display: block;
+            color: #fff;
+            font-size: 1.12rem
+        }
+
+        .left-title,
+        .left-subtitle,
+        .desc-cards-title,
+        .desc-card-title,
+        .card-detail-title,
+        .menu-tarot-title,
+        .menu-tarot-result strong {
+            font-family: "Cormorant Garamond", serif
+        }
+
+        @media(max-width:900px) and (orientation:portrait) {
+
+            .top-nav,
+            .nav-menu {
+                backdrop-filter: none;
+                -webkit-backdrop-filter: none
+            }
+
+            .tarot-panel {
+                width: 92vw;
+                padding: 1.5rem 1rem
+            }
+
+            .menu-tarot-title {
+                font-size: 1.55rem
+            }
+
+            .menu-tarot-cards {
+                gap: .45rem
+            }
+
+            .menu-tarot-card {
+                width: 27vw;
+                max-width: 6.4rem;
+                height: 9rem
+            }
+
+            .menu-tarot-card span {
+                margin-bottom: 2.1rem;
+                font-size: 1.45rem
+            }
+        }
+
+        @media(max-height:620px) and (orientation:landscape) {
+            .top-nav {
+                top: max(.6rem, env(safe-area-inset-top));
+                left: .65rem
+            }
+
+            .tarot-panel {
+                max-height: 90vh;
+                overflow: auto
+            }
+
+            .menu-tarot-card {
+                width: 6.2rem;
+                height: 8rem
+            }
+
+            .menu-tarot-card span {
+                margin-bottom: 1.6rem
+            }
+        }
+
+        .split-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 10;
+            display: flex;
+            opacity: 1
+        }
+
+        .left-half,
+        .right-half {
+            position: relative;
+            width: 50%;
+            height: 100%;
+            overflow: hidden;
+            cursor: pointer
+        }
+
+        .left-half {
+            display: flex;
+            align-items: center;
+            padding: 4rem 3.2rem;
+            background: linear-gradient(150deg, #ffd1e6, #ff98c1 43%, #ffaacc 72%, #ffe6f1)
+        }
+
+        .left-half:before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 75% 42%, rgba(255, 255, 255, .38), transparent 34%), radial-gradient(circle at 15% 85%, rgba(220, 45, 105, .22), transparent 38%)
+        }
+
+        .left-content {
+            position: relative;
+            z-index: 2;
+            max-width: 34rem
+        }
+
+        .left-accent-line {
+            position: absolute;
+            left: 1.5rem;
+            top: 20%;
+            bottom: 20%;
+            width: 1px;
+            background: linear-gradient(transparent, rgba(190, 45, 110, .5), transparent)
+        }
+
+        .left-corner-label {
+            position: absolute;
+            top: 1.3rem;
+            right: 1.5rem;
+            font-family: "Jost", sans-serif;
+            font-size: .56rem;
+            letter-spacing: .28em;
+            color: rgba(145, 30, 85, .65)
+        }
+
+        .left-kicker {
+            display: flex;
+            align-items: center;
+            gap: .7rem;
+            margin-bottom: 1.1rem;
+            font-family: "Jost", sans-serif;
+            font-size: .62rem;
+            letter-spacing: .28em;
+            color: rgba(145, 30, 85, .78)
+        }
+
+        .left-kicker:before {
+            content: "";
+            width: 1.7rem;
+            height: 1px;
+            background: rgba(145, 30, 85, .7)
+        }
+
+        .left-title {
+            margin: 0;
+            font-size: clamp(3rem, 5.5vw, 6.5rem);
+            font-weight: 300;
+            line-height: .92;
+            letter-spacing: .14em;
+            color: rgba(130, 20, 70, .96);
+            text-shadow: 0 0 55px rgba(255, 255, 255, .45)
+        }
+
+        .left-subtitle {
+            margin: .25rem 0 1rem;
+            font-size: 1.15rem;
+            font-style: italic;
+            letter-spacing: .18em;
+            color: rgba(145, 30, 85, .76)
+        }
+
+        .left-rule {
+            width: 2.5rem;
+            height: 1px;
+            margin-bottom: 1.2rem;
+            background: linear-gradient(90deg, rgba(145, 30, 85, .7), transparent)
+        }
+
+        .left-body {
+            max-width: 31ch;
+            margin: 0 0 1.3rem;
+            font-size: 1.02rem;
+            line-height: 1.75;
+            color: rgba(110, 16, 52, .78)
+        }
+
+        .left-tags {
+            display: flex;
+            gap: .45rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem
+        }
+
+        .left-tag {
+            padding: .26rem .72rem;
+            border: 1px solid rgba(145, 30, 85, .35);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, .16);
+            font-family: "Jost", sans-serif;
+            font-size: .58rem;
+            letter-spacing: .16em;
+            color: rgba(145, 30, 85, .9)
+        }
+
+        .left-cta {
+            display: flex;
+            align-items: center;
+            gap: .7rem;
+            font-family: "Jost", sans-serif;
+            font-size: .68rem;
+            letter-spacing: .2em;
+            color: rgba(145, 30, 85, .8)
+        }
+
+        .left-cta-arrow {
+            position: relative;
+            width: 2rem;
+            height: 1px;
+            background: rgba(145, 30, 85, .75)
+        }
+
+        .left-cta-arrow:after {
+            content: "";
+            position: absolute;
+            right: -1px;
+            top: -3px;
+            border-top: 4px solid transparent;
+            border-bottom: 4px solid transparent;
+            border-left: 5px solid rgba(145, 30, 85, .75)
+        }
+
+        .left-bottom-hint {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 1.3rem;
+            text-align: center;
+            font-family: "Jost", sans-serif;
+            font-size: .52rem;
+            letter-spacing: .24em;
+            color: rgba(145, 30, 85, .44)
+        }
+
+        .right-preview-img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            animation: previewZoom 12s ease-in-out infinite alternate
+        }
+
+        @keyframes previewZoom {
+            to {
+                transform: scale(1.12)
+            }
+        }
+
+        .right-preview-vignette {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle, transparent 22%, rgba(0, 0, 0, .5))
+        }
+
+        .right-center-hint {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            z-index: 2;
+            display: grid;
+            place-items: center;
+            gap: .55rem;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            transition: .25s
+        }
+
+        .right-half:hover .right-center-hint {
+            opacity: 1
+        }
+
+        .right-center-icon {
+            width: 3.2rem;
+            height: 3.2rem;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            border: 1px solid rgba(255, 145, 185, .25);
+            background: rgba(0, 0, 0, .28);
+            color: var(--accent)
+        }
+
+        .right-center-label,
+        .right-expand-hint {
+            font-family: "Jost", sans-serif;
+            font-size: .58rem;
+            letter-spacing: .24em;
+            color: rgba(255, 215, 228, .72)
+        }
+
+        .right-expand-hint {
+            position: absolute;
+            right: 1.2rem;
+            bottom: 1.2rem;
+            z-index: 2
+        }
+
+        .split-divider {
+            position: absolute;
+            left: 50%;
+            top: 7%;
+            bottom: 7%;
+            z-index: 12;
+            width: 1px;
+            background: linear-gradient(transparent, rgba(220, 45, 105, .34), transparent)
+        }
+
+        .desc-cards-overlay {
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 5rem 0 calc(5.25rem + env(safe-area-inset-bottom));
+            overscroll-behavior: contain
+        }
+
+        .desc-cards-wrapper {
+            position: relative;
+            z-index: 1;
+            width: min(90vw, 72rem);
+            margin: 0 auto;
+            display: grid;
+            gap: 1.25rem;
+            padding-bottom: 1.25rem
+        }
+
+        .desc-close-btn {
+            position: absolute;
+            right: 0;
+            top: -3rem
+        }
+
+        .desc-cards-header {
+            text-align: center
+        }
+
+        .desc-cards-kicker,
+        .desc-card-kicker {
+            font-family: "Jost", sans-serif;
+            font-size: .57rem;
+            letter-spacing: .26em;
+            color: rgba(255, 145, 185, .65)
+        }
+
+        .desc-cards-title {
+            margin: .4rem 0 0;
+            font-size: 1.75rem;
+            font-weight: 300;
+            letter-spacing: .12em;
+            color: rgba(255, 220, 232, .92)
+        }
+
+        .desc-cards-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem
+        }
+
+        .desc-card {
+            overflow: hidden;
+            border-radius: 1rem;
+            border: 1px solid rgba(255, 255, 255, .1);
+            background: rgba(30, 5, 14, .72);
+            cursor: pointer
+        }
+
+        .desc-card-img-wrap {
+            position: relative;
+            height: 13rem;
+            overflow: hidden
+        }
+
+        .desc-card-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block
+        }
+
+        .desc-card-img-wrap:after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(transparent 45%, rgba(28, 4, 12, .75))
+        }
+
+        .desc-card-img-badge {
+            position: absolute;
+            left: .75rem;
+            top: .75rem;
+            z-index: 2;
+            padding: .22rem .58rem;
+            border-radius: 999px;
+            background: rgba(0, 0, 0, .45);
+            font-family: "Jost", sans-serif;
+            font-size: .5rem;
+            letter-spacing: .18em;
+            color: rgba(255, 215, 228, .85)
+        }
+
+        .desc-card-body {
+            padding: 1.1rem
+        }
+
+        .desc-card-title {
+            margin: .45rem 0 .6rem;
+            font-size: 1.25rem;
+            color: rgba(255, 220, 232, .92)
+        }
+
+        .desc-card-excerpt {
+            margin: 0 0 1rem;
+            line-height: 1.65;
+            color: rgba(255, 215, 228, .58)
+        }
+
+        .desc-card-readmore {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            font-family: "Jost", sans-serif;
+            font-size: .55rem;
+            letter-spacing: .2em;
+            color: rgba(235, 70, 130, .72)
+        }
+
+        .desc-card-readmore-arrow {
+            width: 1.5rem;
+            height: 1px;
+            background: rgba(235, 70, 130, .7)
+        }
+
+        .card-detail-panel {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            z-index: 1;
+            width: min(90vw, 58rem);
+            height: min(84dvh, 44rem);
+            transform: translate(-50%, -50%) scale(.96);
+            border-radius: 1.15rem;
+            background: rgba(22, 3, 10, .96);
+            border: 1px solid rgba(255, 255, 255, .13);
+            overflow: hidden;
+            transition: .28s
+        }
+
+        .modal.show .card-detail-panel {
+            transform: translate(-50%, -50%) scale(1)
+        }
+
+        .card-detail-close {
+            position: absolute;
+            right: .8rem;
+            top: .8rem;
+            z-index: 3
+        }
+
+        .card-detail-body {
+            height: 100%;
+            padding: 2rem;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch
+        }
+
+        .card-detail-layout {
+            display: grid;
+            grid-template-columns: 1fr 1.15fr;
+            gap: 1.4rem;
+            min-height: 100%
+        }
+
+        .card-detail-image-wrap {
+            border-radius: .9rem;
+            overflow: hidden
+        }
+
+        .card-detail-image-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover
+        }
+
+        .card-detail-text {
+            padding-top: 2rem;
+            color: #fff
+        }
+
+        .card-detail-kicker {
+            font-family: "Jost", sans-serif;
+            font-size: .6rem;
+            letter-spacing: .2em;
+            color: rgba(255, 215, 228, .55)
+        }
+
+        .card-detail-title {
+            margin: .5rem 0 .9rem;
+            font-size: 1.5rem
+        }
+
+        .card-detail-copy {
+            line-height: 1.75;
+            color: rgba(255, 255, 255, .72)
+        }
+
+        @media(max-width:900px) and (orientation:portrait) {
+
+            .viewport,
+            .game-container {
+                height: 100dvh;
+                min-height: 100dvh
+            }
+
+            .split-overlay {
+                flex-direction: column
+            }
+
+            .right-half {
+                order: 1;
+                width: 100%;
+                height: 40%;
+                flex: 0 0 40%
+            }
+
+            .left-half {
+                order: 2;
+                width: 100%;
+                height: 60%;
+                flex: 0 0 60%;
+                padding: 1.15rem 1.3rem
+            }
+
+            .split-divider {
+                left: 7%;
+                right: 7%;
+                top: 40%;
+                bottom: auto;
+                width: auto;
+                height: 1px;
+                background: linear-gradient(90deg, transparent, rgba(220, 45, 105, .42), transparent)
+            }
+
+            .right-center-hint {
+                opacity: 1;
+                top: 56%
+            }
+
+            .right-center-icon {
+                width: 2.8rem;
+                height: 2.8rem
+            }
+
+            .right-expand-hint {
+                right: .8rem;
+                bottom: .7rem;
+                font-size: .5rem
+            }
+
+            .left-accent-line,
+            .left-bottom-hint {
+                display: none
+            }
+
+            .left-corner-label {
+                top: .7rem;
+                right: .8rem;
+                font-size: .48rem
+            }
+
+            .left-content {
+                width: 100%;
+                max-width: 30rem;
+                margin: auto
+            }
+
+            .left-kicker {
+                margin-bottom: .5rem;
+                font-size: .52rem
+            }
+
+            .left-title {
+                font-size: clamp(2rem, 9.5vw, 3.2rem);
+                letter-spacing: .1em
+            }
+
+            .left-subtitle {
+                margin: .12rem 0 .5rem;
+                font-size: .86rem
+            }
+
+            .left-rule {
+                margin-bottom: .55rem
+            }
+
+            .left-body {
+                max-width: none;
+                margin-bottom: .6rem;
+                font-size: clamp(.76rem, 3.2vw, .9rem);
+                line-height: 1.42
+            }
+
+            .left-tags {
+                gap: .35rem;
+                margin-bottom: .65rem
+            }
+
+            .left-tag {
+                padding: .2rem .55rem;
+                font-size: .49rem
+            }
+
+            .left-cta {
+                font-size: .56rem
+            }
+
+            .desc-cards-overlay {
+                        padding: 4.5rem 0 calc(6rem + env(safe-area-inset-bottom))
+            }
+
+            .desc-close-btn {
+                        right: .2rem;
+                        top: -3.15rem
+            }
+
+            .desc-cards-grid {
+                grid-template-columns: 1fr
+            }
+
+            .desc-card-img-wrap {
+                height: 9rem
+            }
+
+            .desc-cards-wrapper {
+                width: min(92vw, 30rem)
+            }
+
+            .card-detail-panel {
+                width: 92vw;
+                height: 86dvh
+            }
+
+            .card-detail-body {
+                padding: 1rem
+            }
+
+            .card-detail-layout {
+                grid-template-columns: 1fr;
+                gap: .8rem
+            }
+
+            .card-detail-image-wrap {
+                height: 30dvh
+            }
+
+            .card-detail-text {
+                padding: .3rem
+            }
+
+            .card-detail-title {
+                font-size: 1.2rem
+            }
+
+            .card-detail-copy {
+                font-size: .88rem;
+                line-height: 1.65
+            }
+        }
+
+        @media(max-width:390px) and (orientation:portrait), (max-height:700px) and (orientation:portrait) {
+            .right-half {
+                height: 37%;
+                flex-basis: 37%
+            }
+
+            .left-half {
+                height: 63%;
+                flex-basis: 63%;
+                padding: .9rem 1.15rem
+            }
+
+            .split-divider {
+                top: 37%
+            }
+
+            .left-title {
+                font-size: 1.9rem
+            }
+
+            .left-body {
+                font-size: .73rem;
+                line-height: 1.36
+            }
+
+            .left-tags {
+                margin-bottom: .5rem
+            }
+
+            .left-kicker,
+            .left-subtitle {
+                margin-bottom: .38rem
+            }
+        }
+
+        @media(max-height:620px) and (orientation:landscape) {
+
+            .viewport,
+            .game-container {
+                height: 100dvh;
+                min-height: 100dvh
+            }
+
+            .split-overlay {
+                flex-direction: row
+            }
+
+            .left-half,
+            .right-half {
+                width: 50%;
+                height: 100%;
+                flex: 0 0 50%
+            }
+
+            .left-half {
+                order: 1;
+                padding: 2.4rem 2rem
+            }
+
+            .right-half {
+                order: 2
+            }
+
+            .split-divider {
+                left: 50%;
+                top: 8%;
+                bottom: 8%;
+                right: auto;
+                width: 1px;
+                height: auto;
+                background: linear-gradient(transparent, rgba(220, 45, 105, .36), transparent)
+            }
+
+            .left-title {
+                font-size: clamp(2.1rem, 6vw, 4rem)
+            }
+
+            .left-body {
+                font-size: .82rem;
+                line-height: 1.45;
+                margin-bottom: .7rem
+            }
+
+            .left-tags {
+                margin-bottom: .7rem
+            }
+
+            .left-bottom-hint {
+                display: none
+            }
+
+            .right-center-hint {
+                opacity: 1
+            }
+
+            .desc-cards-overlay {
+                        padding: 3.6rem 0 calc(4rem + env(safe-area-inset-bottom))
+            }
+
+            .desc-close-btn {
+                        top: -2.8rem
+            }
+
+            .desc-card-img-wrap {
+                height: 7rem
+            }
+
+            .desc-card-body {
+                padding: .8rem
+            }
+
+            .card-detail-panel {
+                height: 88vh
+            }
+
+            .card-detail-body {
+                padding: 1rem
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="viewport">
+        <div class="game-container">
+            <div class="top-nav" id="topNav">
+                <button aria-label="메뉴 열기" class="menu-toggle-btn" id="menuToggleBtn" type="button" aria-expanded="false"><span></span><span></span><span></span>
+                </button>
+                <div class="nav-menu"><button class="nav-link" id="mainMenuLink" type="button">메인메뉴</button><button class="nav-link" id="collectGemLink" type="button">COLLECT YOUR GEM</button><button class="nav-link" id="todayTarotLink" type="button">오늘 운세보기</button></div>
+            </div><button aria-label="다크 모드로 전환" class="mode-toggle" id="modeToggle" title="Dark mode" type="button"><span class="toggle-knob"></span></button>
+            <div class="split-overlay">
+                <div class="left-half" id="leftHalf" role="button" tabindex="0" aria-label="루비 상세 정보 열기">
+                    <div class="left-accent-line">
+                    </div>
+                    <div class="left-corner-label">RUBY · 07</div>
+                    <div class="left-content">
+                        <div class="left-kicker">JULY · BIRTHSTONE</div>
+                        <h1 class="left-title">R U B Y</h1>
+                        <p class="left-subtitle">루비</p>
+                        <div class="left-rule">
+                        </div>
+                        <p class="left-body">부드러운 연분홍빛 아래 숨겨진 것은,<br>쉽게 식지 않는 붉은 심장입니다.<br>루비는 사랑과 열정, 용기를 품은<br>따뜻하고 단단한 빛입니다.</p>
+                        <div class="left-tags"><span class="left-tag">사랑</span><span class="left-tag">열정</span><span class="left-tag">용기</span><span class="left-tag">7월</span>
+                        </div>
+                        <div class="left-cta">
+                            <div class="left-cta-arrow">
+                            </div><span>Explore Details</span>
+                        </div>
+                    </div>
+                    <div class="left-bottom-hint">TAP TO DISCOVER</div>
+                </div>
+                <div class="split-divider">
+                </div>
+                <div class="right-half" id="rightHalf" role="button" tabindex="0" aria-label="루비 전체 화면 열기">
+                    <img class="right-preview-img" src="Ruby_view_image_mobile.jpg" alt="루비 프리뷰">
+                    <div class="right-preview-vignette">
+                    </div>
+                    <div class="right-center-hint">
+                        <div class="right-center-icon">↗</div>
+                        <div class="right-center-label">FULL SCREEN</div>
+                    </div>
+                    <div class="right-expand-hint">tap to enter full view</div>
+                </div>
+            </div>
+            <div class="modal desc-cards-overlay" id="descCardsOverlay">
+                <div class="backdrop" id="descBackdrop">
+                </div>
+                <div class="desc-cards-wrapper">
+                    <button class="round-close desc-close-btn" id="descCloseBtn" type="button" aria-label="루비 상세 정보 닫기">×</button>
+                    <div class="desc-cards-header">
+                        <div class="desc-cards-kicker">RUBY · EXPLORE</div>
+                        <h2 class="desc-cards-title">Discover the Gem</h2>
+                    </div>
+                    <div class="desc-cards-grid">
+                        <div class="desc-card" id="descCard1" role="button" tabindex="0" aria-label="루비 일러스트 상세 보기">
+                            <div class="desc-card-img-wrap">
+                                <div class="desc-card-img-badge">ARTWORK</div>
+                                <img class="desc-card-img" src="루비2.jpg" alt="루비 일러스트">
+                            </div>
+                            <div class="desc-card-body">
+                                <div class="desc-card-kicker">ARTWORK NOTE</div>
+                                <h3 class="desc-card-title">Visual Interpretation<br>of Ruby</h3>
+                                <p class="desc-card-excerpt">이 일러스트는 루비의 따뜻한 연분홍빛과 깊은 붉은빛을 감정의 온도로 확장한 작업입니다. 중심에서 번지는 빛을 통해 사랑과 열정이 살아나는 순간을 표현했습니다.</p>
+                                <div class="desc-card-readmore">
+                                    <div class="desc-card-readmore-arrow">
+                                    </div><span>READ MORE</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="desc-card" id="descCard2" role="button" tabindex="0" aria-label="루비 의미 상세 보기">
+                            <div class="desc-card-img-wrap">
+                                <div class="desc-card-img-badge">MEANING</div>
+                                <img class="desc-card-img" src="Ruby_view_image_mobile.jpg" alt="루비 상징">
+                            </div>
+                            <div class="desc-card-body">
+                                <div class="desc-card-kicker">BIRTHSTONE MEANING</div>
+                                <h3 class="desc-card-title">Love &amp;<br>Courage</h3>
+                                <p class="desc-card-excerpt">루비는 7월의 탄생석으로, 오래전부터 사랑과 열정, 용기와 생명력을 상징해 왔습니다. 따뜻한 붉은빛이 마음의 중심을 깨우고 진심을 표현하게 하는 흐름을 담았습니다.</p>
+                                <div class="desc-card-readmore">
+                                    <div class="desc-card-readmore-arrow">
+                                    </div><span>READ MORE</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal" id="cardDetailModal">
+                <div class="backdrop" id="cardDetailBackdrop">
+                </div>
+                <div class="card-detail-panel">
+                    <button class="round-close card-detail-close" id="cardDetailClose" type="button" aria-label="상세 설명 닫기">×</button>
+                    <div class="card-detail-body" id="cardDetailBody">
+                    </div>
+                </div>
+            </div>
+            <div class="modal" id="menuTarotModal">
+                <div class="backdrop" id="menuTarotBackdrop">
+                </div>
+                <div class="tarot-panel">
+                    <button class="round-close menu-tarot-close" id="menuTarotClose" aria-label="닫기" type="button">×</button>
+                    <div class="menu-tarot-kicker">RUBY TAROT</div>
+                    <h2 class="menu-tarot-title">Choose Your Card</h2>
+                    <p class="menu-tarot-desc">오늘의 흐름을 알고 싶다면 카드 한 장을 골라보세요.</p>
+                    <div class="menu-tarot-cards" id="menuTarotCards">
+                        <button class="menu-tarot-card" type="button"><span>Ⅰ</span><em>RUBY</em>
+                        </button>
+                        <button class="menu-tarot-card" type="button"><span>Ⅱ</span><em>RUBY</em>
+                        </button>
+                        <button class="menu-tarot-card" type="button"><span>Ⅲ</span><em>RUBY</em>
+                        </button>
+                    </div>
+                    <div class="menu-tarot-result" id="menuTarotResult">
+                    </div>
+                </div>
+            </div>
+            <div class="transition-overlay" id="transitionOverlay">
+            </div><audio id="clickSound" preload="auto" src="ting.mp3"></audio>
+        </div>
+    </div>
+    <script>
+        const $ = selector => document.querySelector(selector);
+        const $$ = selector => document.querySelectorAll(selector);
+        const nav = $('#topNav');
+        const transitionOverlay = $('#transitionOverlay');
+        const clickSound = $('#clickSound');
+        const tarotMessages = [['7월의 붉은 심장', '망설이던 마음에 분명한 온기가 돌아옵니다. 이번 달에는 진심으로 원하는 것을 솔직하게 선택해 보세요.'], ['사랑의 신호', '말하지 않아도 알 것 같았던 관계에 표현이 필요합니다. 따뜻한 한마디가 서로의 거리를 크게 좁혀줍니다.'], ['용기의 순간', '피하고 싶었던 일과 마주할 힘이 생깁니다. 완벽한 준비보다 지금 내딛는 한 걸음이 더 중요합니다.'], ['열정의 재점화', '잠시 식어 있던 의욕이 다시 살아납니다. 오래 좋아했던 일에 시간을 내면 분명한 답을 얻게 됩니다.'], ['가치 있는 선택', '눈앞의 이익보다 오래 지키고 싶은 가치를 선택하세요. 단단한 기준이 더 큰 결과로 이어집니다.'], ['마음의 고백', '숨겨두었던 감정을 솔직하게 인정할 때 관계와 마음이 함께 가벼워집니다. 진심을 작게라도 표현해 보세요.'], ['루비의 축복', '7월생의 따뜻한 붉은빛이 열립니다. 사랑과 용기의 기운이 당신의 선택을 힘 있게 밝혀줍니다.']];
+
+        function playClickSound() {
+            clickSound.currentTime = 0;
+            const playback = clickSound.play();
+            if (playback) playback.catch(() => {});
+        }
+
+        document.addEventListener('click', event => {
+            if (!(event.target instanceof Element)) return;
+
+            const clickedControl = event.target.closest('button, [role="button"], .backdrop');
+            if (!clickedControl || clickedControl.matches('button:disabled')) return;
+
+            playClickSound();
+        }, true);
+
+        function fade(url, delay = 600) {
+            transitionOverlay.classList.add('show');
+            const audioDuration = Number.isFinite(clickSound.duration) ? clickSound.duration * 1000 : 720;
+            const navigationDelay = Math.max(delay, Math.ceil(audioDuration) + 50);
+            window.setTimeout(() => {
+                window.location.href = url;
+            }, navigationDelay);
+        }
+
+        function resetTarot() {
+            const result = $('#menuTarotResult');
+            result.classList.remove('show');
+            result.innerHTML = '';
+
+            $$('.menu-tarot-card').forEach(card => {
+                card.disabled = false;
+                card.classList.remove('picked', 'dimmed');
+            });
+        }
+
+        function setNavOpen(isOpen) {
+            const menuButton = $('#menuToggleBtn');
+            nav.classList.toggle('open', isOpen);
+            menuButton.setAttribute('aria-expanded', String(isOpen));
+            menuButton.setAttribute('aria-label', isOpen ? '메뉴 닫기' : '메뉴 열기');
+        }
+
+        function openTarotBox(event) {
+            event.stopPropagation();
+            setNavOpen(false);
+            $('#menuTarotModal').classList.add('show');
+            resetTarot();
+        }
+
+        function closeTarotBox() {
+            $('#menuTarotModal').classList.remove('show');
+        }
+
+        $('#menuToggleBtn').addEventListener('click', event => {
+            event.stopPropagation();
+            setNavOpen(!nav.classList.contains('open'));
+        });
+
+        $('#mainMenuLink').addEventListener('click', () => fade('The_gem_I_am_mobile.html', 700));
+        $('#collectGemLink').addEventListener('click', () => fade('gem_collection_mobile.html', 700));
+        $('#todayTarotLink').addEventListener('click', openTarotBox);
+
+        window.addEventListener('click', event => {
+            if (!nav.contains(event.target)) setNavOpen(false);
+        });
+
+        $('#menuTarotBackdrop').addEventListener('click', closeTarotBox);
+        $('#menuTarotClose').addEventListener('click', closeTarotBox);
+        $('#menuTarotCards').addEventListener('click', event => {
+            const card = event.target.closest('.menu-tarot-card');
+            if (!card) return;
+
+            const message = tarotMessages[Math.floor(Math.random() * tarotMessages.length)];
+            const result = $('#menuTarotResult');
+
+            $$('.menu-tarot-card').forEach(item => {
+                item.disabled = true;
+                item.classList.add(item === card ? 'picked' : 'dimmed');
+            });
+
+            result.innerHTML = `<strong>${message[0]}</strong>${message[1]}`;
+            window.setTimeout(() => result.classList.add('show'), 220);
+        });
+
+        const details = { left: ['루비2.jpg', 'ARTWORK NOTE', 'Visual Interpretation of Ruby', `이 일러스트는 루비를 단순한 보석 오브제가 아니라, 사랑과 열정이 빛의 온도로 번지는 하나의 공간으로 해석하는 데서 출발했습니다. 루비의 깊은 붉은빛에 부드러운 연분홍빛을 겹쳐 강렬함과 섬세함이 함께 느껴지도록 표현했습니다.<br><br>화면의 중심에는 심장처럼 응축된 빛을 두고, 그 주위로 유기적인 결이 맥박처럼 퍼져나가도록 구성했습니다. 이는 마음속에 머물던 진심이 용기를 얻어 바깥으로 드러나는 순간을 상징합니다.<br><br>붉은 결 사이로 떠오르는 반짝이는 입자와 투명한 질감은 루비 안에 잠들어 있던 생명력과 열정이 깨어나는 장면을 표현합니다. 선명한 붉은빛만 사용하기보다 따뜻한 연분홍빛을 함께 배치해, 사랑이 가진 부드러움과 단단함을 동시에 담았습니다.<br><br>결국 이 작업은 루비의 외형을 그대로 재현하기보다, 쉽게 식지 않는 마음과 진심을 표현할 용기를 하나의 빛나는 공간으로 확장한 시각적 해석입니다.`], right: ['Ruby_view_image_mobile.jpg', 'BIRTHSTONE MEANING', 'Love and Courage', `루비는 7월의 탄생석으로, 오래전부터 사랑과 열정, 용기와 생명력을 상징하는 보석으로 여겨져 왔습니다. 선명한 붉은빛이 심장과 불꽃을 떠올리게 하기 때문에, 진심을 지키고 자신의 마음을 힘 있게 표현하도록 돕는 상징으로 해석됩니다.<br><br>화면의 중심에 자리한 따뜻한 연분홍빛과 깊은 붉은빛은 한 사람의 진심이 안쪽에서부터 깨어나는 흐름을 나타냅니다. 중심에서 바깥으로 번지는 빛은 사랑이 관계를 연결하고, 용기가 행동으로 이어지는 순간을 표현합니다.<br><br>루비가 가진 열정은 무조건 빠르게 타오르는 감정만을 뜻하지 않습니다. 시간이 지나도 쉽게 식지 않는 마음, 소중한 사람과 목표를 끝까지 지키려는 단단한 의지 또한 루비의 중요한 의미입니다.<br><br>이 페이지의 붉은빛과 연분홍빛은 강렬함과 다정함이 함께 존재하는 마음을 시각화합니다. 7월생에게 루비는 자신의 진심을 숨기지 않고, 사랑과 용기를 바탕으로 원하는 방향을 선택하게 해주는 탄생석입니다.`] };
+
+        function openDetail(key) {
+            const detail = details[key];
+            $('#cardDetailBody').innerHTML = `<div class="card-detail-layout">
+<div class="card-detail-image-wrap">
+<img src="${detail[0]}" alt="루비 이미지">
+</div>
+<div class="card-detail-text">
+<div class="card-detail-kicker">${detail[1]}</div>
+<h3 class="card-detail-title">${detail[2]}</h3>
+<div class="card-detail-copy">${detail[3]}</div>
+</div>
+</div>`;
+            $('#cardDetailModal').classList.add('show');
+        }
+
+        function closeCardDetail() {
+            $('#cardDetailModal').classList.remove('show');
+        }
+
+        function closeDescriptionCards() {
+            $('#descCardsOverlay').classList.remove('show');
+        }
+
+        $('#leftHalf').addEventListener('click', event => {
+            event.stopPropagation();
+            $('#descCardsOverlay').classList.add('show');
+        });
+
+        $('#rightHalf').addEventListener('click', event => {
+            event.stopPropagation();
+            fade('Ruby_mobile_spline_light.html', 500);
+        });
+
+        $('#descBackdrop').addEventListener('click', closeDescriptionCards);
+        $('#descCloseBtn').addEventListener('click', closeDescriptionCards);
+        $('#descCard1').addEventListener('click', event => {
+            event.stopPropagation();
+            openDetail('left');
+        });
+        $('#descCard2').addEventListener('click', event => {
+            event.stopPropagation();
+            openDetail('right');
+        });
+        $('#cardDetailClose').addEventListener('click', closeCardDetail);
+        $('#cardDetailBackdrop').addEventListener('click', closeCardDetail);
+
+        $$('[role="button"][tabindex="0"]').forEach(control => {
+            control.addEventListener('keydown', event => {
+                if (event.key !== 'Enter' && event.key !== ' ') return;
+                event.preventDefault();
+                control.click();
+            });
+        });
+
+        window.addEventListener('keydown', event => {
+            if (event.key !== 'Escape') return;
+
+            closeCardDetail();
+            closeDescriptionCards();
+            closeTarotBox();
+            setNavOpen(false);
+        });
+
+        $('#modeToggle').addEventListener('click', event => {
+            event.stopPropagation();
+            event.currentTarget.classList.add('active');
+            fade('Ruby_star_mobile_info.html', 550);
+        });
+    </script>
+
+
+</body></html>

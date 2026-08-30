@@ -1,0 +1,1851 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+  <title>Pearl Star · Mobile Info View</title>
+  <style>
+*,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+      font-family: 'Cormorant Garamond', serif;
+    }
+
+    .viewport {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .game-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background: #000;
+    }
+/* ===== TOP NAV ===== */
+    .top-nav {
+      position: absolute;
+      top: 3%;
+      left: 2%;
+      z-index: 30;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.65rem;
+    }
+
+    .menu-toggle-btn {
+      position: relative;
+      width: clamp(2.5rem, 3.2vw, 3.2rem);
+      height: clamp(2.5rem, 3.2vw, 3.2rem);
+      border-radius: 50%;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow: 0 0 0.8vw rgba(255, 235, 195, 0.22), inset 0 0 0.35vw rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .menu-toggle-btn:hover {
+      transform: scale(1.08);
+    }
+
+    .menu-toggle-btn::before {
+      content: "";
+      width: clamp(0.72rem, 0.95vw, 0.95rem);
+      height: clamp(0.72rem, 0.95vw, 0.95rem);
+      border-radius: 50%;
+      background: #fff0c8;
+      box-shadow: 0 0 0.6vw rgba(255, 235, 195, 0.60), 0 0 1.2vw rgba(255, 220, 165, 0.32);
+    }
+
+    .menu-toggle-btn span {
+      position: absolute;
+      width: 1.1rem;
+      height: 1px;
+      border-radius: 999px;
+      background: rgba(255, 245, 245, 0.88);
+      box-shadow: 0 0 0.35vw rgba(255, 235, 195, 0.45);
+      transition: transform 0.28s ease, opacity 0.28s ease;
+    }
+
+    .menu-toggle-btn span:nth-child(1) {
+      transform: translateY(-0.32rem);
+    }
+
+    .menu-toggle-btn span:nth-child(2) {
+      transform: translateY(0);
+    }
+
+    .menu-toggle-btn span:nth-child(3) {
+      transform: translateY(0.32rem);
+    }
+
+    .top-nav.open .menu-toggle-btn span:nth-child(1) {
+      transform: rotate(45deg);
+    }
+
+    .top-nav.open .menu-toggle-btn span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .top-nav.open .menu-toggle-btn span:nth-child(3) {
+      transform: rotate(-45deg);
+    }
+
+    .nav-menu {
+      min-width: 11.5rem;
+      padding: 0.9rem 1rem;
+      border-radius: 1.15rem;
+      margin-left: 0.15rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.72rem;
+      background: rgba(10, 4, 8, 0.36);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      box-shadow: 0 0 1vw rgba(255, 225, 175, 0.14), 0 0 1.8vw rgba(0, 0, 0, 0.22), inset 0 0 0.45vw rgba(255, 255, 255, 0.07);
+      opacity: 0;
+      transform: translateY(-0.35rem) scale(0.96);
+      pointer-events: none;
+      transition: opacity 0.32s ease, transform 0.32s ease;
+    }
+
+    .top-nav.open .nav-menu {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+
+    .nav-link {
+      width: 100%;
+      box-sizing: border-box;
+      font-size: clamp(0.78rem, 0.86vw, 0.92rem);
+      letter-spacing: 0.16em;
+      font-weight: 500;
+      color: rgba(255, 244, 222, 0.84);
+      cursor: pointer;
+      padding: 0.48rem 0.65rem;
+      border-radius: 999px;
+      border: 0;
+      background: transparent;
+      font-family: 'Jost', sans-serif;
+      text-align: left;
+      transition: color 0.28s ease, background 0.28s ease, transform 0.28s ease;
+    }
+
+    .nav-link:hover {
+      color: rgba(255, 250, 250, 0.98);
+      background: rgba(255, 255, 255, 0.07);
+      transform: translateX(3px);
+    }
+
+    /* ===== MODE TOGGLE ===== */
+    .mode-toggle {
+      position: absolute;
+      top: 3%;
+      right: 3%;
+      width: 3.35rem;
+      height: 1.72rem;
+      border-radius: 999px;
+      z-index: 20;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transition: background 0.25s ease;
+    }
+
+    .mode-toggle.active {
+      background: rgba(255, 232, 178, 0.22);
+      border-color: rgba(255, 224, 170, 0.20);
+    }
+
+    .toggle-knob {
+      position: absolute;
+      top: 50%;
+      left: 0.18rem;
+      width: 1.28rem;
+      height: 1.28rem;
+      border-radius: 50%;
+      transform: translateY(-50%);
+      background: rgba(255, 255, 255, 0.88);
+      transition: left 0.28s ease, background 0.28s ease;
+    }
+
+    .mode-toggle.active .toggle-knob {
+      left: 1.88rem;
+      background: rgba(255, 240, 205, 0.96);
+    }
+
+    /* ===== MUSIC ===== */
+    .music-btn {
+      position: absolute;
+      bottom: 6%;
+      right: 4%;
+      width: clamp(2.5rem, 3.2vw, 3.2rem);
+      height: clamp(2.5rem, 3.2vw, 3.2rem);
+      border-radius: 50%;
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow: 0 0 0.8vw rgba(255, 235, 195, 0.25);
+      transition: all 0.3s ease;
+    }
+
+    .music-btn:hover {
+      transform: scale(1.08);
+    }
+
+    .music-inner {
+      width: clamp(0.7rem, 0.9vw, 0.9rem);
+      height: clamp(0.7rem, 0.9vw, 0.9rem);
+      border-radius: 50%;
+      background: #fff0c8;
+      box-shadow: 0 0 0.6vw rgba(255, 235, 195, 0.60);
+      position: relative;
+      z-index: 2;
+    }
+
+    .music-label {
+      position: absolute;
+      left: 50%;
+      bottom: -1.55rem;
+      transform: translateX(-50%);
+      display: block;
+      width: max-content;
+      min-width: 6.2rem;
+      font-size: 0.9rem;
+      letter-spacing: 0.08em;
+      text-align: center;
+      white-space: nowrap;
+      color: rgba(255, 255, 255, 0.62);
+      transition: color 0.35s ease;
+    }
+
+    .music-btn.playing .music-label {
+      color: rgba(255, 240, 205, 0.90);
+    }
+
+    /* ===== TRANSITION OVERLAY ===== */
+    .transition-overlay {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 99999;
+      transition: opacity 0.8s ease;
+    }
+
+    .transition-overlay.show {
+      opacity: 1;
+    }
+/* Constellation detail modal */
+    .constellation-detail-modal {
+      position: absolute;
+      inset: 0;
+      z-index: 60;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease;
+    }
+
+    .constellation-detail-modal.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .constellation-detail-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.38);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .constellation-detail-panel {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: min(62vw, 58rem);
+      height: min(82vh, 44rem);
+      transform: translate(-50%, -50%) scale(0.92);
+      border-radius: 1.35rem;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.05));
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      box-shadow: 0 0 2vw rgba(0, 0, 0, 0.22), inset 0 0 1vw rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+      transition: transform 0.35s ease;
+    }
+
+    .constellation-detail-modal.show .constellation-detail-panel {
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .constellation-detail-close {
+      position: absolute;
+      top: 0.9rem;
+      right: 0.9rem;
+      z-index: 3;
+      width: 2.1rem;
+      height: 2.1rem;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.08);
+      color: rgba(255, 255, 255, 0.82);
+      font-size: 1.15rem;
+      backdrop-filter: blur(8px);
+    }
+
+    .constellation-detail-body {
+      display: grid;
+      grid-template-columns: 1fr 1.15fr;
+      gap: 1.4rem;
+      width: 100%;
+      height: 100%;
+      padding: 2.2rem;
+      box-sizing: border-box;
+    }
+
+    .constellation-detail-image-wrap {
+      height: 100%;
+      border-radius: 1rem;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .constellation-detail-image-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .constellation-detail-text {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      min-height: 0;
+      padding-top: 3.1rem;
+    }
+
+    .constellation-detail-kicker {
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      color: rgba(255, 255, 255, 0.45);
+      margin-bottom: 0.8rem;
+    }
+
+    .constellation-detail-title {
+      margin: 0 0 1rem 0;
+      font-size: clamp(1.4rem, 1.8vw, 2rem);
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.95);
+    }
+
+    .constellation-detail-copy {
+      font-size: clamp(0.95rem, 1vw, 1.05rem);
+      line-height: 1.9;
+      color: rgba(255, 255, 255, 0.76);
+      overflow-y: auto;
+      max-height: min(24rem, 52vh);
+      padding-right: 0.45rem;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
+    }
+
+    .constellation-detail-copy::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .constellation-detail-copy::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .constellation-detail-copy::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.18);
+      border-radius: 999px;
+    }
+/* ================================================================
+       SPLIT SCREEN
+       ================================================================ */
+    .split-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 5;
+      display: flex;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 1.0s ease;
+    }
+
+    .split-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .split-overlay.hide-all {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.65s ease;
+    }
+
+    /* ─── LEFT HALF ─── */
+    .left-half {
+      position: relative;
+      width: 50%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 0 3.8rem 0 3.2rem;
+      cursor: pointer;
+      overflow: hidden;
+      background: linear-gradient(160deg, #0d0506 0%, #240b0f 55%, #0d0508 100%);
+    }
+
+    .left-half::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 62% 52%, rgba(255, 226, 170, 0.12), transparent 58%), radial-gradient(ellipse at 20% 78%, rgba(255, 210, 150, 0.08), transparent 44%);
+      pointer-events: none;
+    }
+
+    .left-half::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 226, 170, 0.045);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease;
+    }
+
+    .left-half:hover::after {
+      opacity: 1;
+    }
+
+    .left-accent-line {
+      position: absolute;
+      left: 1.6rem;
+      top: 22%;
+      bottom: 22%;
+      width: 1px;
+      background: linear-gradient(to bottom, transparent, rgba(255, 220, 160, 0.42) 35%, rgba(255, 220, 160, 0.42) 65%, transparent);
+    }
+
+    .left-corner-label {
+      position: absolute;
+      top: 1.6rem;
+      right: 2rem;
+      font-family: 'Jost', sans-serif;
+      font-size: 0.62rem;
+      font-weight: 300;
+      letter-spacing: 0.3em;
+      color: rgba(255, 225, 170, 0.36);
+    }
+
+    .left-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .left-kicker {
+      font-family: 'Jost', sans-serif;
+      font-size: clamp(0.6rem, 0.7vw, 0.72rem);
+      font-weight: 300;
+      letter-spacing: 0.34em;
+      color: rgba(255, 232, 185, 0.66);
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .left-kicker::before {
+      content: '';
+      display: inline-block;
+      width: 1.8rem;
+      height: 1px;
+      background: rgba(255, 222, 165, 0.48);
+    }
+
+    .left-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(3.2rem, 5.5vw, 6.8rem);
+  font-weight: 300;
+
+  letter-spacing: 0em;
+
+  color: rgba(255, 238, 208, 0.94);
+
+  margin: 0 0 0.1em 0;
+
+  line-height: 0.88;
+
+}
+.planet-sub {
+  display: block;
+
+  margin-top: 1em;
+  margin-left: 0.18em;
+
+  font-size: 0.34em;
+
+  letter-spacing: 0.42em;
+
+  color: rgba(228, 194, 135, 0.92);
+}
+    .left-subtitle {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(0.95rem, 1.3vw, 1.4rem);
+      font-weight: 300;
+      font-style: italic;
+      letter-spacing: 0.2em;
+      color: rgba(255, 228, 178, 0.58);
+      margin: 0.2em 0 1.8rem 0;
+    }
+
+    .left-rule {
+      width: 2.6rem;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(255, 220, 160, 0.60), transparent);
+      margin-bottom: 1.7rem;
+    }
+
+    .left-body {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(0.98rem, 1.08vw, 1.14rem);
+      font-weight: 400;
+      line-height: 2.0;
+      color: rgba(255, 245, 222, 0.60);
+      margin: 0 0 2rem 0;
+      max-width: 30ch;
+    }
+
+    .left-tags {
+      display: flex;
+      gap: 0.55rem;
+      flex-wrap: wrap;
+      margin-bottom: 2.4rem;
+    }
+
+    .left-tag {
+      padding: 0.28rem 0.82rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 222, 165, 0.22);
+      background: rgba(255, 150, 185, 0.06);
+      font-family: 'Jost', sans-serif;
+      font-size: clamp(0.58rem, 0.66vw, 0.68rem);
+      font-weight: 300;
+      letter-spacing: 0.22em;
+      color: rgba(255, 232, 185, 0.68);
+    }
+
+    .left-cta {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      font-family: 'Jost', sans-serif;
+      font-size: clamp(0.68rem, 0.78vw, 0.8rem);
+      font-weight: 300;
+      letter-spacing: 0.24em;
+      color: rgba(255, 244, 220, 0.68);
+      transition: color 0.35s ease;
+    }
+
+    .left-cta-arrow {
+      width: 2rem;
+      height: 1px;
+      background: rgba(255, 225, 170, 0.56);
+      position: relative;
+      transition: width 0.35s ease;
+    }
+
+    .left-cta-arrow::after {
+      content: '';
+      position: absolute;
+      right: -1px;
+      top: -3px;
+      border-top: 4px solid transparent;
+      border-bottom: 4px solid transparent;
+      border-left: 5px solid rgba(255, 225, 170, 0.56);
+    }
+
+    .left-half:hover .left-cta {
+      color: rgba(255, 232, 238, 0.92);
+    }
+
+    .left-half:hover .left-cta-arrow {
+      width: 3rem;
+    }
+
+    .left-bottom-hint {
+      position: absolute;
+      bottom: 1.8rem;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-family: 'Jost', sans-serif;
+      font-size: 0.58rem;
+      letter-spacing: 0.28em;
+      color: rgba(255, 238, 205, 0.22);
+      animation: softBlink 3.2s ease-in-out infinite;
+    }
+
+    @keyframes softBlink {
+
+      0%,
+      100% {
+        opacity: 0.45;
+      }
+
+      50% {
+        opacity: 1;
+      }
+    }
+
+    /* Divider */
+    .split-divider {
+      position: absolute;
+      left: 50%;
+      top: 8%;
+      bottom: 8%;
+      width: 1px;
+      background: linear-gradient(to bottom, transparent, rgba(255, 222, 165, 0.25) 25%, rgba(255, 222, 165, 0.25) 75%, transparent);
+      z-index: 6;
+      pointer-events: none;
+    }
+
+    /* ─── RIGHT HALF ─── */
+    .right-half {
+      position: relative;
+      width: 50%;
+      height: 100%;
+      cursor: pointer;
+      overflow: hidden;
+      background: #000;
+    }
+
+    .right-preview-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      transform-origin: center center;
+      animation: previewZoom 12s ease-in-out infinite alternate;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    @keyframes previewZoom {
+      from {
+        transform: scale(1.0);
+      }
+
+      to {
+        transform: scale(1.18);
+      }
+    }
+
+    .right-preview-vignette {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.52) 100%), linear-gradient(to left, rgba(0, 0, 0, 0.28) 0%, rgba(0, 0, 0, 0.04) 60%);
+      transition: background 0.4s ease;
+    }
+
+    .right-half:hover .right-preview-vignette {
+      background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.06) 0%, rgba(0, 0, 0, 0.4) 100%), linear-gradient(to left, rgba(0, 0, 0, 0.16) 0%, transparent 60%);
+    }
+
+    .right-content {
+      position: absolute;
+      right: 2rem;
+      bottom: 2.4rem;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.5rem;
+      z-index: 3;
+    }
+
+    .right-center-hint {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.7rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+      z-index: 3;
+    }
+
+    .right-half:hover .right-center-hint {
+      opacity: 1;
+    }
+
+    .right-center-icon {
+      width: 3.5rem;
+      height: 3.5rem;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 238, 205, 0.20);
+      background: rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      color: rgba(255, 242, 218, 0.72);
+    }
+
+    .right-center-label {
+      font-family: 'Jost', sans-serif;
+      font-size: 0.62rem;
+      font-weight: 300;
+      letter-spacing: 0.3em;
+      color: rgba(255, 232, 190, 0.52);
+      white-space: nowrap;
+    }
+/* ===== DESC CARDS OVERLAY ===== */
+    .desc-cards-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 55;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.45s ease;
+    }
+
+    .desc-cards-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .desc-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(3, 1, 5, 0.78);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    .desc-cards-wrapper {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.8rem;
+      width: min(90vw, 74rem);
+    }
+
+    .desc-close-btn {
+      position: absolute;
+      top: -3.2rem;
+      right: 0;
+      width: 2.1rem;
+      height: 2.1rem;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: rgba(255, 255, 255, 0.06);
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.25s ease;
+    }
+
+    .desc-close-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .desc-cards-header {
+      text-align: center;
+    }
+
+    .desc-cards-kicker {
+      font-family: 'Jost', sans-serif;
+      font-size: 0.64rem;
+      font-weight: 300;
+      letter-spacing: 0.32em;
+      color: rgba(255, 230, 180, 0.56);
+      margin-bottom: 0.55rem;
+    }
+
+    .desc-cards-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.3rem, 2vw, 2rem);
+      font-weight: 300;
+      letter-spacing: 0.14em;
+      color: rgba(255, 248, 230, 0.87);
+      margin: 0;
+    }
+
+    .desc-cards-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.4rem;
+      width: 100%;
+    }
+
+    .desc-card {
+      position: relative;
+      border-radius: 1.15rem;
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      background: rgba(10, 3, 8, 0.68);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      overflow: hidden;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.35s ease, box-shadow 0.35s ease;
+      animation: cardReveal 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    .desc-card:nth-child(1) {
+      animation-delay: 0.04s;
+    }
+
+    .desc-card:nth-child(2) {
+      animation-delay: 0.14s;
+    }
+
+    @keyframes cardReveal {
+      from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.97);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .desc-card:hover {
+      transform: translateY(-6px) scale(1.015);
+      border-color: rgba(255, 222, 165, 0.25);
+      box-shadow: 0 14px 48px rgba(0, 0, 0, 0.42), 0 0 24px rgba(255, 140, 180, 0.10);
+    }
+
+    .desc-card-img-wrap {
+      position: relative;
+      overflow: hidden;
+      height: clamp(9rem, 16vw, 14rem);
+    }
+
+    .desc-card-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: brightness(0.82) saturate(0.85);
+      transition: filter 0.45s ease, transform 0.45s ease;
+    }
+
+    .desc-card:hover .desc-card-img {
+      filter: brightness(0.95) saturate(1.06);
+      transform: scale(1.04);
+    }
+
+    .desc-card-img-wrap::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent 45%, rgba(8, 2, 6, 0.72) 100%);
+    }
+
+    .desc-card-img-badge {
+      position: absolute;
+      top: 0.85rem;
+      left: 0.85rem;
+      z-index: 2;
+      padding: 0.24rem 0.7rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(6px);
+      font-family: 'Jost', sans-serif;
+      font-size: 0.54rem;
+      font-weight: 300;
+      letter-spacing: 0.22em;
+      color: rgba(255, 210, 220, 0.75);
+    }
+
+    .desc-card-body {
+      padding: 1.3rem 1.5rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .desc-card-kicker {
+      font-family: 'Jost', sans-serif;
+      font-size: 0.58rem;
+      font-weight: 300;
+      letter-spacing: 0.3em;
+      color: rgba(255, 230, 180, 0.60);
+      margin-bottom: 0.55rem;
+    }
+
+    .desc-card-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.05rem, 1.3vw, 1.4rem);
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      color: rgba(255, 248, 230, 0.92);
+      margin: 0 0 0.75rem 0;
+      line-height: 1.28;
+    }
+
+    .desc-card-excerpt {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(0.88rem, 0.96vw, 1rem);
+      line-height: 1.75;
+      color: rgba(255, 232, 190, 0.52);
+      margin: 0 0 1.3rem 0;
+      flex: 1;
+    }
+
+    .desc-card-readmore {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      font-family: 'Jost', sans-serif;
+      font-size: 0.6rem;
+      font-weight: 300;
+      letter-spacing: 0.26em;
+      color: rgba(255, 225, 175, 0.62);
+      transition: gap 0.35s ease, color 0.35s ease;
+    }
+
+    .desc-card-readmore-arrow {
+      width: 1.5rem;
+      height: 1px;
+      background: rgba(255, 222, 165, 0.50);
+      position: relative;
+      transition: width 0.35s ease;
+    }
+
+    .desc-card-readmore-arrow::after {
+      content: '';
+      position: absolute;
+      right: -1px;
+      top: -3px;
+      border-top: 3px solid transparent;
+      border-bottom: 3px solid transparent;
+      border-left: 4px solid rgba(255, 222, 165, 0.50);
+    }
+
+    .desc-card:hover .desc-card-readmore {
+      gap: 0.95rem;
+      color: rgba(255, 220, 170, 0.92);
+    }
+
+    .desc-card:hover .desc-card-readmore-arrow {
+      width: 2.2rem;
+    }
+
+    /* ================================================================
+       MOBILE STRUCTURE — desktop design/colors remain unchanged
+       ================================================================ */
+    @media (max-width: 900px) and (orientation: portrait) {
+      html, body, .viewport, .game-container { height: 100dvh; min-height: 100dvh; }
+      .top-nav { top: max(1rem, env(safe-area-inset-top)); left: 1rem; }
+      .mode-toggle { top: max(1rem, env(safe-area-inset-top)); right: 1rem; }
+      .split-overlay { flex-direction: column; }
+      .right-half { order: 1; width: 100%; height: 40%; flex: 0 0 40%; }
+      .left-half { order: 2; width: 100%; height: 60%; flex: 0 0 60%; padding: 1.15rem 1.3rem; }
+      .split-divider {
+        left: 7%; right: 7%; top: 40%; bottom: auto;
+        width: auto; height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255, 222, 165, 0.35), transparent);
+      }
+      .right-center-hint { top: 56%; opacity: 1; }
+      .right-center-icon { width: 2.8rem; height: 2.8rem; }
+      .left-accent-line, .left-bottom-hint { display: none; }
+      .left-corner-label { top: 0.7rem; right: 0.8rem; font-size: 0.48rem; }
+      .left-content { width: 100%; max-width: 30rem; margin: auto; }
+      .left-kicker { margin-bottom: 0.5rem; font-size: 0.52rem; }
+      .left-title { font-size: clamp(2rem, 9.5vw, 3.2rem); letter-spacing: 0.1em; }
+      .planet-sub { margin-top: 0.65em; font-size: 0.31em; letter-spacing: 0.36em; }
+      .left-subtitle { margin: 0.12rem 0 0.5rem; font-size: 0.86rem; }
+      .left-rule { margin-bottom: 0.55rem; }
+      .left-body {
+        max-width: none; margin-bottom: 0.6rem;
+        font-size: clamp(0.76rem, 3.2vw, 0.9rem); line-height: 1.42;
+      }
+      .left-tags { gap: 0.35rem; margin-bottom: 0.65rem; }
+      .left-tag { padding: 0.2rem 0.55rem; font-size: 0.49rem; }
+      .left-cta { font-size: 0.56rem; }
+      .music-btn { right: 1rem; bottom: calc(2.7rem + env(safe-area-inset-bottom)); }
+      .desc-cards-overlay {
+        position: fixed; overflow-y: auto; -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+        padding: 4.5rem 0 calc(6rem + env(safe-area-inset-bottom));
+      }
+      .desc-backdrop, .constellation-detail-backdrop { position: fixed; }
+      .desc-cards-wrapper {
+        position: relative; left: auto; top: auto; transform: none;
+        width: min(92vw, 30rem); margin: 0 auto; padding-bottom: 1.25rem; gap: 1.25rem;
+      }
+      .desc-close-btn { top: -3.15rem; right: 0.2rem; width: 2.35rem; height: 2.35rem; }
+      .desc-cards-grid { grid-template-columns: 1fr; gap: 1rem; }
+      .desc-card-img-wrap { height: 9rem; }
+      .constellation-detail-modal { position: fixed; }
+      .constellation-detail-panel { width: 92vw; height: 86dvh; }
+      .constellation-detail-close { width: 2.35rem; height: 2.35rem; }
+      .constellation-detail-body {
+        grid-template-columns: 1fr; gap: 0.8rem; padding: 1rem;
+        overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain;
+      }
+      .constellation-detail-image-wrap { height: 30dvh; min-height: 30dvh; }
+      .constellation-detail-text { padding: 0.3rem; }
+      .constellation-detail-title { font-size: 1.2rem; }
+      .constellation-detail-copy { max-height: none; overflow: visible; font-size: 0.88rem; line-height: 1.65; }
+    }
+
+    @media (max-width: 390px) and (orientation: portrait),
+      (max-height: 700px) and (orientation: portrait) {
+      .right-half { height: 37%; flex-basis: 37%; }
+      .left-half { height: 63%; flex-basis: 63%; padding: 0.9rem 1.15rem; }
+      .split-divider { top: 37%; }
+      .left-title { font-size: 1.9rem; }
+      .planet-sub { margin-top: 0.5em; }
+      .left-body { font-size: 0.73rem; line-height: 1.36; }
+      .left-tags { margin-bottom: 0.5rem; }
+      .left-kicker, .left-subtitle { margin-bottom: 0.38rem; }
+      .music-btn { bottom: calc(2.35rem + env(safe-area-inset-bottom)); }
+    }
+
+    @media (max-height: 620px) and (orientation: landscape) {
+      html, body, .viewport, .game-container { height: 100dvh; min-height: 100dvh; }
+      .top-nav {
+        top: max(0.6rem, env(safe-area-inset-top));
+        left: max(0.65rem, env(safe-area-inset-left));
+      }
+      .mode-toggle {
+        top: max(0.7rem, env(safe-area-inset-top));
+        right: max(0.75rem, env(safe-area-inset-right));
+      }
+      .split-overlay { flex-direction: row; }
+      .left-half, .right-half { width: 50%; height: 100%; flex: 0 0 50%; }
+      .left-half { order: 1; padding: 2.4rem 2rem; }
+      .right-half { order: 2; }
+      .split-divider {
+        left: 50%; right: auto; top: 8%; bottom: 8%;
+        width: 1px; height: auto;
+        background: linear-gradient(transparent, rgba(255, 222, 165, 0.30), transparent);
+      }
+      .left-kicker { margin-bottom: 0.55rem; font-size: 0.5rem; }
+      .left-title { font-size: clamp(1.8rem, 4.8vw, 3.2rem); letter-spacing: 0.1em; }
+      .planet-sub { margin-top: 0.45em; font-size: 0.28em; }
+      .left-subtitle { margin: 0.1rem 0 0.45rem; font-size: 0.78rem; }
+      .left-rule { margin-bottom: 0.5rem; }
+      .left-body { margin-bottom: 0.7rem; font-size: 0.78rem; line-height: 1.38; }
+      .left-tags { margin-bottom: 0.65rem; }
+      .left-tag { padding: 0.18rem 0.5rem; font-size: 0.46rem; }
+      .left-cta { font-size: 0.52rem; }
+      .left-bottom-hint { display: none; }
+      .right-center-hint { opacity: 1; }
+      .music-btn {
+        right: max(1rem, env(safe-area-inset-right));
+        bottom: calc(2.1rem + env(safe-area-inset-bottom));
+      }
+      .desc-cards-overlay {
+        position: fixed; overflow-y: auto; -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+        padding: 3.6rem 0 calc(4rem + env(safe-area-inset-bottom));
+      }
+      .desc-backdrop, .constellation-detail-backdrop { position: fixed; }
+      .desc-cards-wrapper {
+        position: relative; left: auto; top: auto; transform: none;
+        width: min(90vw, 48rem); margin: 0 auto; padding-bottom: 1rem; gap: 0.9rem;
+      }
+      .desc-close-btn { top: -2.8rem; width: 2.35rem; height: 2.35rem; }
+      .desc-cards-grid { grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+      .desc-card-img-wrap { height: 7rem; }
+      .desc-card-body { padding: 0.8rem; }
+      .desc-card-excerpt { font-size: 0.78rem; line-height: 1.5; margin-bottom: 0.8rem; }
+      .constellation-detail-modal { position: fixed; }
+      .constellation-detail-panel { width: min(90vw, 58rem); height: 88dvh; }
+      .constellation-detail-body {
+        padding: 1rem; overflow-y: auto; -webkit-overflow-scrolling: touch;
+      }
+      .constellation-detail-text { padding-top: 1.6rem; }
+      .constellation-detail-copy { max-height: 58vh; font-size: 0.85rem; line-height: 1.6; }
+    }
+
+    /* ===== CONSTELLATION UNLOCK STATE ===== */
+    .desc-card.locked {
+      cursor: not-allowed;
+    }
+
+    .desc-card.locked:hover {
+      transform: none;
+      border-color: rgba(255, 255, 255, 0.09);
+      box-shadow: none;
+    }
+
+    .desc-card.locked .desc-card-img,
+    .desc-card.locked:hover .desc-card-img {
+      filter: brightness(0.42) saturate(0.45) blur(2px);
+      transform: none;
+    }
+
+    .desc-card.locked .desc-card-readmore {
+      color: rgba(255, 240, 200, 0.42);
+    }
+
+    /* ===== STANDARD MENU TAROT & CONTROL ACCESSIBILITY ===== */
+    .menu-toggle-btn,
+    .mode-toggle,
+    .nav-link {
+      font: inherit;
+    }
+
+    .menu-toggle-btn,
+    .mode-toggle {
+      padding: 0;
+    }
+
+    .menu-tarot-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.28s ease;
+    }
+
+    .menu-tarot-modal.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .menu-tarot-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 3, 7, 0.9);
+    }
+
+    .tarot-panel {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      z-index: 1;
+      width: min(90vw, 46rem);
+      transform: translate(-50%, -50%) scale(0.96);
+      padding: 2rem;
+      border-radius: 1.2rem;
+      background: rgba(5, 7, 14, 0.96);
+      border: 1px solid rgba(255, 240, 200, 0.25);
+      box-shadow: 0 0 2rem rgba(255, 240, 200, 0.12);
+      text-align: center;
+      transition: transform 0.28s ease;
+    }
+
+    .menu-tarot-modal.show .tarot-panel {
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .menu-tarot-close {
+      position: absolute;
+      right: 0.8rem;
+      top: 0.8rem;
+      display: grid;
+      place-items: center;
+      width: 2.35rem;
+      height: 2.35rem;
+      padding: 0;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 50%;
+      background: rgba(7, 9, 16, 0.76);
+      color: rgba(255, 255, 255, 0.92);
+      font-family: 'Jost', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 300;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .menu-tarot-kicker {
+      font-family: 'Jost', sans-serif;
+      font-size: 0.58rem;
+      letter-spacing: 0.28em;
+      color: rgba(255, 240, 200, 0.72);
+    }
+
+    .menu-tarot-title {
+      margin: 0.5rem 0 0;
+      color: rgba(255, 255, 255, 0.96);
+      font-size: 2rem;
+      font-weight: 300;
+    }
+
+    .menu-tarot-desc {
+      margin: 0.7rem 0 1.4rem;
+      color: rgba(255, 240, 200, 0.76);
+    }
+
+    .menu-tarot-cards {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+    }
+
+    .menu-tarot-card {
+      width: 8rem;
+      height: 11.5rem;
+      border: 1px solid rgba(255, 240, 200, 0.42);
+      border-radius: 0.85rem;
+      background: linear-gradient(180deg, rgba(255, 240, 200, 0.58), rgba(255, 240, 200, 0.24));
+      color: rgba(255, 255, 255, 0.94);
+      cursor: pointer;
+      transition: transform 0.25s ease, opacity 0.25s ease;
+    }
+
+    .menu-tarot-card span {
+      display: block;
+      margin-bottom: 3rem;
+      font-size: 1.8rem;
+    }
+
+    .menu-tarot-card em {
+      font-family: 'Jost', sans-serif;
+      font-size: 0.52rem;
+      letter-spacing: 0.22em;
+      font-style: normal;
+    }
+
+    .menu-tarot-card.picked {
+      transform: translateY(-6px) scale(1.03);
+    }
+
+    .menu-tarot-card.dimmed {
+      opacity: 0.25;
+      pointer-events: none;
+    }
+
+    .menu-tarot-result {
+      min-height: 4rem;
+      margin-top: 1rem;
+      opacity: 0;
+      transform: translateY(8px);
+      color: rgba(255, 255, 255, 0.82);
+      line-height: 1.65;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .menu-tarot-result.show {
+      opacity: 1;
+      transform: none;
+    }
+
+    .menu-tarot-result strong {
+      display: block;
+      color: #fff0c8;
+      font-size: 1.12rem;
+    }
+
+    .menu-tarot-title,
+    .menu-tarot-result strong {
+      font-family: 'Cormorant Garamond', serif;
+    }
+
+    @media (max-width: 900px) and (orientation: portrait) {
+      .tarot-panel {
+        width: 92vw;
+        padding: 1.5rem 1rem;
+      }
+
+      .menu-tarot-title { font-size: 1.55rem; }
+      .menu-tarot-cards { gap: 0.45rem; }
+
+      .menu-tarot-card {
+        width: 27vw;
+        max-width: 6.4rem;
+        height: 9rem;
+      }
+
+      .menu-tarot-card span {
+        margin-bottom: 2.1rem;
+        font-size: 1.45rem;
+      }
+    }
+
+    @media (max-height: 620px) and (orientation: landscape) {
+      .tarot-panel {
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+
+      .menu-tarot-card {
+        width: 6.2rem;
+        height: 8rem;
+      }
+
+      .menu-tarot-card span { margin-bottom: 1.6rem; }
+    }
+
+  </style>
+</head>
+<body>
+  <div class="viewport">
+    <div class="game-container">
+      <div class="top-nav" id="topNav">
+<button aria-expanded="false" aria-label="메뉴 열기" class="menu-toggle-btn" id="menuToggleBtn" type="button">
+<span></span><span></span><span></span>
+</button>
+<div class="nav-menu">
+<button class="nav-link" id="mainMenuLink" type="button">메인메뉴</button>
+<button class="nav-link" id="collectStarLink" type="button">COLLECT YOUR STAR</button>
+<button class="nav-link" id="todayTarotLink" type="button">오늘 운세보기</button>
+</div>
+</div>
+      <button aria-label="라이트 모드로 전환" class="mode-toggle active" id="modeToggle" title="Light mode" type="button">
+<span class="toggle-knob"></span>
+</button>
+      <div class="split-overlay show" id="splitOverlay">
+<div aria-label="진주 별 상세 정보 열기" class="left-half" id="leftHalf" role="button" tabindex="0">
+<div class="left-accent-line"></div>
+<div class="left-corner-label">PEARL · 06</div>
+<div class="left-content">
+<div class="left-kicker" id="constellationHeroKicker">? · CONSTELLATION</div>
+<h1 class="left-title">
+            P E A R L
+            <span class="planet-sub">PLANET</span>
+</h1>
+<p class="left-subtitle">진주 행성</p>
+<div class="left-rule"></div>
+<p class="left-body">
+              연분홍빛 에너지가 우주의 어둠 속에서<br/>
+              하나의 행성으로 피어납니다.<br/>
+              진주의 빛은 은은하게,<br/>
+              그러나 선명한 온도로 남습니다.
+            </p>
+<div class="left-tags">
+<span class="left-tag" id="constellationHeroTag">?</span>
+<span class="left-tag">6월</span>
+<span class="left-tag">행성</span>
+<span class="left-tag">우주</span>
+</div>
+<div class="left-cta">
+<div class="left-cta-arrow"></div>
+<span>Explore Details</span>
+</div>
+</div>
+<div class="left-bottom-hint">TAP TO DISCOVER</div>
+</div>
+<div class="split-divider"></div>
+<div aria-label="진주 별 전체 화면 열기" class="right-half" id="rightHalf" role="button" tabindex="0">
+<img alt="진주 스타 프리뷰" class="right-preview-img" src="Pearl_star_image_mobile.jpg"/>
+<div class="right-preview-vignette"></div>
+<div class="right-center-hint">
+<div class="right-center-icon">↗</div>
+<div class="right-center-label">FULL SCREEN</div>
+</div>
+<div class="right-content">
+</div>
+</div>
+</div>
+      <div aria-hidden="true" class="constellation-detail-modal" id="constellationDetailModal">
+<div class="constellation-detail-backdrop" id="constellationDetailBackdrop"></div>
+<div aria-labelledby="detailTitle" aria-modal="true" class="constellation-detail-panel" role="dialog">
+<button aria-label="상세 설명 닫기" class="constellation-detail-close" id="constellationDetailClose" type="button">×</button>
+<div class="constellation-detail-body">
+<div class="constellation-detail-image-wrap">
+<img alt="진주 행성" id="detailImg" src="Pearl_star_image_mobile.jpg"/>
+</div>
+<div class="constellation-detail-text">
+<div class="constellation-detail-kicker" id="detailKicker">PLANET NOTE</div>
+<h3 class="constellation-detail-title" id="detailTitle">Pearl Planet</h3>
+<div class="constellation-detail-copy" id="detailCopy"></div>
+</div>
+</div>
+</div>
+</div>
+      <div aria-hidden="true" class="desc-cards-overlay" id="descCardsOverlay">
+<div class="desc-backdrop" id="descBackdrop"></div>
+<div aria-labelledby="descCardsTitle" aria-modal="true" class="desc-cards-wrapper" role="dialog">
+<button aria-label="진주 상세 정보 닫기" class="desc-close-btn" id="descCloseBtn" type="button">×</button>
+<div class="desc-cards-header">
+<div class="desc-cards-kicker">PEARL STAR · EXPLORE</div>
+<h2 class="desc-cards-title" id="descCardsTitle">Discover the Universe</h2>
+</div>
+<div class="desc-cards-grid">
+<div aria-label="진주 행성 상세 보기" class="desc-card" id="descCard1" role="button" tabindex="0">
+<div class="desc-card-img-wrap">
+<div class="desc-card-img-badge">PLANET</div>
+<img alt="진주 행성" class="desc-card-img" src="Pearl_star_image_mobile.jpg"/>
+</div>
+<div class="desc-card-body">
+<div class="desc-card-kicker">PLANET NOTE</div>
+<h3 class="desc-card-title">Pearl Planet</h3>
+<p class="desc-card-excerpt">진주의 연분홍과 연노랑빛이 우주적인 스케일로 확장된 세계입니다. 중심에서 은은하게 번지는 부드러운 광채와 따뜻한 여운을 시각화했습니다.</p>
+<div class="desc-card-readmore">
+<div class="desc-card-readmore-arrow"></div>
+<span>READ MORE</span>
+</div>
+</div>
+</div>
+<div aria-disabled="true" aria-label="쌍둥이자리 상세 보기" class="desc-card locked" id="descCard2" role="button" tabindex="-1">
+<div class="desc-card-img-wrap">
+<div class="desc-card-img-badge">CONSTELLATION</div>
+<img alt="쌍둥이자리" class="desc-card-img" src="쌍둥이자리-인포-2.jpg"/>
+</div>
+<div class="desc-card-body">
+<div class="desc-card-kicker" id="constellationCardKicker">UNKNOWN</div>
+<h3 class="desc-card-title" id="constellationCardTitle">?<br/>Constellation</h3>
+<p class="desc-card-excerpt" id="constellationExcerpt">별자리를 찾아야 해금이 가능합니다</p>
+<div class="desc-card-readmore">
+<div class="desc-card-readmore-arrow"></div>
+<span id="constellationReadmoreLabel">LOCKED</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div aria-hidden="true" class="menu-tarot-modal" id="menuTarotModal">
+<div class="menu-tarot-backdrop" id="menuTarotBackdrop"></div>
+<div aria-labelledby="menuTarotTitle" aria-modal="true" class="tarot-panel" role="dialog">
+<button aria-label="타로 닫기" class="menu-tarot-close" id="menuTarotClose" type="button">×</button>
+<div class="menu-tarot-kicker">PEARL STAR TAROT</div>
+<h2 class="menu-tarot-title" id="menuTarotTitle">Choose Your Card</h2>
+<p class="menu-tarot-desc">오늘의 흐름을 알고 싶다면 카드 한 장을 골라보세요.</p>
+<div class="menu-tarot-cards" id="menuTarotCards">
+<button class="menu-tarot-card" type="button"><span>Ⅰ</span><em>PEARL</em></button>
+<button class="menu-tarot-card" type="button"><span>Ⅱ</span><em>PEARL</em></button>
+<button class="menu-tarot-card" type="button"><span>Ⅲ</span><em>PEARL</em></button>
+</div>
+<div aria-live="polite" class="menu-tarot-result" id="menuTarotResult"></div>
+</div>
+</div>
+<div aria-label="배경 음악 재생" aria-pressed="false" class="music-btn" id="musicBtn" role="button" tabindex="0">
+<div class="music-inner"></div>
+<div class="music-label">music on</div>
+</div>
+      <div class="transition-overlay" id="transitionOverlay"></div>
+      <audio id="bgm" loop src="우주 음악.mp3"></audio>
+<audio id="clickSound" preload="auto" src="ting.mp3"></audio>
+    </div>
+  </div>
+  <script>
+    const $ = selector => document.querySelector(selector);
+    const $$ = selector => document.querySelectorAll(selector);
+
+    const audio = $('#bgm');
+    const musicBtn = $('#musicBtn');
+    const audioLabel = $('.music-label');
+    const clickSound = $('#clickSound');
+    const toggle = $('#modeToggle');
+    const overlay = $('#transitionOverlay');
+    const topNav = $('#topNav');
+    const menuToggleBtn = $('#menuToggleBtn');
+    const descCardsOverlay = $('#descCardsOverlay');
+    const descBackdrop = $('#descBackdrop');
+    const descCloseBtn = $('#descCloseBtn');
+    const descCard1 = $('#descCard1');
+    const descCard2 = $('#descCard2');
+    const constellationDetailModal = $('#constellationDetailModal');
+    const constellationDetailBackdrop = $('#constellationDetailBackdrop');
+    const constellationDetailClose = $('#constellationDetailClose');
+    const detailImg = $('#detailImg');
+    const detailKicker = $('#detailKicker');
+    const detailTitle = $('#detailTitle');
+    const detailCopy = $('#detailCopy');
+
+    const constellationExcerpt = $('#constellationExcerpt');
+    const constellationReadmoreLabel = $('#constellationReadmoreLabel');
+    const constellationHeroKicker = $('#constellationHeroKicker');
+    const constellationHeroTag = $('#constellationHeroTag');
+    const constellationCardKicker = $('#constellationCardKicker');
+    const constellationCardTitle = $('#constellationCardTitle');
+
+    const CONSTELLATION_UNLOCK_KEY = 'pearlConstellationUnlockedRouteV1';
+    const CONSTELLATION_RETURN_KEY = 'pearlConstellationReturnedRouteV1';
+    const CONSTELLATION_LOCKED_COPY = '별자리를 찾아야 해금이 가능합니다';
+    const CONSTELLATION_UNLOCKED_COPY = "두 별처럼 나란히 이어지는 유연한 별의 결. 호기심과 소통, 서로 다른 마음을 잇는 6월의 별자리입니다.";
+    let isConstellationUnlocked = false;
+
+    function readConstellationUnlock() {
+      try {
+        return sessionStorage.getItem(CONSTELLATION_UNLOCK_KEY) === 'true';
+      } catch (error) {
+        console.warn('별자리 해금 기록을 불러올 수 없습니다.', error);
+        return false;
+      }
+    }
+
+    function consumeConstellationReturn() {
+      try {
+        const returnedFromSpline = sessionStorage.getItem(CONSTELLATION_RETURN_KEY) === 'true';
+
+        if (returnedFromSpline) {
+          sessionStorage.setItem(CONSTELLATION_UNLOCK_KEY, 'true');
+          sessionStorage.removeItem(CONSTELLATION_RETURN_KEY);
+          return true;
+        }
+
+        return false;
+      } catch (error) {
+        console.warn('별자리 복귀 상태를 확인할 수 없습니다.', error);
+        return false;
+      }
+    }
+
+    function resetConstellationUnlockState() {
+      try {
+        sessionStorage.removeItem(CONSTELLATION_UNLOCK_KEY);
+        sessionStorage.removeItem(CONSTELLATION_RETURN_KEY);
+      } catch (error) {
+        console.warn('별자리 해금 상태를 초기화할 수 없습니다.', error);
+      }
+    }
+
+    function updateConstellationUnlockState() {
+      isConstellationUnlocked = readConstellationUnlock();
+      descCard2.classList.toggle('locked', !isConstellationUnlocked);
+      descCard2.setAttribute('aria-disabled', String(!isConstellationUnlocked));
+      descCard2.setAttribute('tabindex', isConstellationUnlocked ? '0' : '-1');
+      constellationExcerpt.textContent = isConstellationUnlocked
+        ? CONSTELLATION_UNLOCKED_COPY
+        : CONSTELLATION_LOCKED_COPY;
+      constellationReadmoreLabel.textContent = isConstellationUnlocked ? 'READ MORE' : 'LOCKED';
+      constellationHeroKicker.textContent = isConstellationUnlocked
+        ? 'GEMINI · CONSTELLATION'
+        : '? · CONSTELLATION';
+      constellationHeroTag.textContent = isConstellationUnlocked ? '쌍둥이자리' : '?';
+      constellationCardKicker.textContent = isConstellationUnlocked ? 'GEMINI' : 'UNKNOWN';
+      constellationCardTitle.innerHTML = isConstellationUnlocked
+        ? '쌍둥이자리<br>Constellation'
+        : '?<br>Constellation';
+    }
+
+    function initializeConstellationUnlockState() {
+      consumeConstellationReturn();
+      updateConstellationUnlockState();
+    }
+
+    function refreshConstellationUnlockState() {
+      consumeConstellationReturn();
+      updateConstellationUnlockState();
+    }
+
+
+    const tarotMessages = [
+      [
+            "6월의 연분홍과 연노랑빛",
+            "오늘은 순수의 기운이 또렷해집니다. 서두르기보다 자신에게 맞는 속도로 움직여 보세요."
+      ],
+      [
+            "쌍둥이자리의 방향",
+            "쌍둥이자리의 별빛이 선택의 기준을 밝혀줍니다. 처음 마음에 남은 신호를 가볍게 넘기지 마세요."
+      ],
+      [
+            "균형의 흐름",
+            "일과 마음 사이의 균형을 살펴보세요. 무리한 계획 하나를 덜어내면 부드러운 여유가 다시 찾아옵니다."
+      ],
+      [
+            "부드러운 연결",
+            "다정한 한마디가 생각보다 긴 여운을 남깁니다. 가까운 사람에게 먼저 따뜻한 안부를 건네보세요."
+      ],
+      [
+            "진주의 쉼",
+            "조용한 시간 속에서 마음의 결이 다시 고르게 정돈됩니다. 오늘만큼은 자신에게도 부드럽게 대해주세요."
+      ],
+      [
+            "소통의 선택",
+            "소통의 의미를 떠올리며 오래 남을 쪽을 고르세요. 눈앞의 속도보다 방향이 중요합니다."
+      ],
+      [
+            "진주의 축복",
+            "연분홍과 연노랑빛이 오늘의 궤도를 은은하게 밝힙니다. 자신만의 중심을 믿고 다음 장면으로 나아가세요."
+      ]
+];
+
+    const detailContent = {
+      planet: {
+        img: "Pearl_star_image_mobile.jpg",
+        kicker: "PLANET NOTE",
+        title: "Pearl Planet",
+        copy: `진주 행성은 단순히 보석을 우주 속에 배치한 이미지가 아니라,
+          진주가 가진 순수함과 부드러운 광채의 밀도를 하나의 공간으로 확장해 해석한 결과입니다.
+          <br><br>
+          저는 이 행성을 통해 진주의 색이 지닌 따뜻함, 섬세함, 그리고 맑고 균형 잡힌 빛의 결을 표현하고 싶었습니다.
+          표면은 연분홍과 연노랑빛으로 은은하게 빛나며, 그 안에서는 부드러운 에너지가 살아 움직이는 듯한 감각을 만들고자 했습니다.
+          <br><br>
+          행성 주변을 둘러싸는 빛과 흐름은 단순한 장식이 아니라,
+          중심에서 바깥으로 퍼져나가는 순수함과 조화의 흔적을 시각화한 것입니다.
+          이는 진주가 상징하는 순수함, 균형, 그리고 마음을 부드럽게 지켜내는 힘을 우주적인 스케일로 풀어낸 장면입니다.
+          <br><br>
+          이 작업은 보석을 하나의 물질로 보여주는 데서 멈추지 않고,
+          진주라는 존재가 하나의 세계가 된다면 어떤 분위기와 중력을 가질지를 상상하며 만든 시도입니다.`
+      },
+      constellation: {
+        img: "쌍둥이자리-인포-2.jpg",
+        kicker: "CONSTELLATION",
+        title: "쌍둥이자리",
+        copy: `쌍둥이자리는 5월 21일부터 6월 21일에 태어난 이들의 별자리로,
+          여름을 앞둔 밤하늘에서 두 별이 나란히 빛나는 듯한 섬세한 에너지를 상징합니다.
+          <br><br>
+          고요한 밤하늘 위에 번지는 별의 결은
+          다정하고 유연한 리듬을 남기며 진주 행성의 연분홍빛과 자연스럽게 이어집니다.
+          <br><br>
+          쌍둥이자리는 호기심, 소통, 그리고 서로 다른 마음을 이어주는 따뜻한 감각을 은은하게 드러냅니다.
+          가볍게 흐르면서도 깊은 연결을 만드는 힘이 이 별자리의 아름다움입니다.
+          <br><br>
+          진주는 이 쌍둥이자리의 에너지를 부드럽게 담아내는 6월의 탄생석입니다.
+          연분홍과 연노랑으로 피어나는 빛은 순수함과 균형, 마음을 지켜내는 힘을 상징합니다.`
+      }
+    };
+
+    function playClickSound() {
+      clickSound.currentTime = 0;
+      const playback = clickSound.play();
+      if (playback) playback.catch(() => {});
+    }
+
+    document.addEventListener('click', event => {
+      if (!(event.target instanceof Element)) return;
+
+      const clickedControl = event.target.closest('button, [role="button"], .menu-tarot-backdrop, .desc-backdrop, .constellation-detail-backdrop');
+      if (!clickedControl || clickedControl.matches('button:disabled')) return;
+
+      playClickSound();
+    }, true);
+
+    const transitionTo = (href, delay = 550) => {
+      overlay.classList.add('show');
+      const soundDuration = Number.isFinite(clickSound.duration) ? clickSound.duration * 1000 : 720;
+      const navigationDelay = Math.max(delay, Math.ceil(soundDuration) + 50);
+      window.setTimeout(() => {
+        window.location.href = href;
+      }, navigationDelay);
+    };
+
+    function setNavOpen(isOpen) {
+      topNav.classList.toggle('open', isOpen);
+      menuToggleBtn.setAttribute('aria-expanded', String(isOpen));
+      menuToggleBtn.setAttribute('aria-label', isOpen ? '메뉴 닫기' : '메뉴 열기');
+    }
+
+    function openDescCards() {
+      descCardsOverlay.classList.add('show');
+      descCardsOverlay.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeDescCards() {
+      descCardsOverlay.classList.remove('show');
+      descCardsOverlay.setAttribute('aria-hidden', 'true');
+    }
+
+    function showDetail(type) {
+      if (type === 'constellation' && !isConstellationUnlocked) return;
+
+      const data = detailContent[type];
+      if (!data) return;
+
+      detailImg.src = data.img;
+      detailImg.alt = type === 'planet' ? '진주 행성' : '쌍둥이자리';
+      detailKicker.textContent = data.kicker;
+      detailTitle.textContent = data.title;
+      detailCopy.innerHTML = data.copy;
+      constellationDetailModal.classList.add('show');
+      constellationDetailModal.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeDetail() {
+      constellationDetailModal.classList.remove('show');
+      constellationDetailModal.setAttribute('aria-hidden', 'true');
+    }
+
+    function resetTarot() {
+      const result = $('#menuTarotResult');
+      result.classList.remove('show');
+      result.innerHTML = '';
+
+      $$('.menu-tarot-card').forEach(card => {
+        card.disabled = false;
+        card.classList.remove('picked', 'dimmed');
+      });
+    }
+
+    function openTarotBox(event) {
+      event.stopPropagation();
+      setNavOpen(false);
+      $('#menuTarotModal').classList.add('show');
+      $('#menuTarotModal').setAttribute('aria-hidden', 'false');
+      resetTarot();
+    }
+
+    function closeTarotBox() {
+      $('#menuTarotModal').classList.remove('show');
+      $('#menuTarotModal').setAttribute('aria-hidden', 'true');
+    }
+
+    $('#leftHalf').addEventListener('click', event => {
+      event.stopPropagation();
+      openDescCards();
+    });
+
+    $('#rightHalf').addEventListener('click', event => {
+      event.stopPropagation();
+      resetConstellationUnlockState();
+      transitionTo('Pearl_star_mobile_spline.html', 450);
+    });
+
+    descBackdrop.addEventListener('click', closeDescCards);
+    descCloseBtn.addEventListener('click', closeDescCards);
+    descCard1.addEventListener('click', event => {
+      event.stopPropagation();
+      showDetail('planet');
+    });
+    descCard2.addEventListener('click', event => {
+      event.stopPropagation();
+      if (!isConstellationUnlocked) return;
+      showDetail('constellation');
+    });
+    constellationDetailClose.addEventListener('click', closeDetail);
+    constellationDetailBackdrop.addEventListener('click', closeDetail);
+
+    musicBtn.addEventListener('click', async event => {
+      event.stopPropagation();
+      audio.volume = 0.45;
+
+      try {
+        if (audio.paused) {
+          await audio.play();
+          musicBtn.classList.add('playing');
+          musicBtn.setAttribute('aria-pressed', 'true');
+          audioLabel.textContent = 'music off';
+        } else {
+          audio.pause();
+          musicBtn.classList.remove('playing');
+          musicBtn.setAttribute('aria-pressed', 'false');
+          audioLabel.textContent = 'music on';
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    });
+
+    menuToggleBtn.addEventListener('click', event => {
+      event.stopPropagation();
+      setNavOpen(!topNav.classList.contains('open'));
+    });
+
+    $('#mainMenuLink').addEventListener('click', () => {
+      resetConstellationUnlockState();
+      transitionTo('The_star_I_am_mobile.html', 700);
+    });
+    $('#collectStarLink').addEventListener('click', () => {
+      resetConstellationUnlockState();
+      transitionTo('zodiac_collection_mobile.html', 700);
+    });
+    $('#todayTarotLink').addEventListener('click', openTarotBox);
+
+    window.addEventListener('click', event => {
+      if (!topNav.contains(event.target)) setNavOpen(false);
+    });
+
+    $('#menuTarotBackdrop').addEventListener('click', closeTarotBox);
+    $('#menuTarotClose').addEventListener('click', closeTarotBox);
+    $('#menuTarotCards').addEventListener('click', event => {
+      const card = event.target.closest('.menu-tarot-card');
+      if (!card) return;
+
+      const message = tarotMessages[Math.floor(Math.random() * tarotMessages.length)];
+      const result = $('#menuTarotResult');
+
+      $$('.menu-tarot-card').forEach(item => {
+        item.disabled = true;
+        item.classList.add(item === card ? 'picked' : 'dimmed');
+      });
+
+      result.innerHTML = `<strong>${message[0]}</strong>${message[1]}`;
+      window.setTimeout(() => result.classList.add('show'), 220);
+    });
+
+    toggle.addEventListener('click', event => {
+      event.stopPropagation();
+      toggle.classList.remove('active');
+      resetConstellationUnlockState();
+      transitionTo('Pearl_mobile_info.html', 800);
+    });
+
+    $$('[role="button"]').forEach(control => {
+      control.addEventListener('keydown', event => {
+        if (control.getAttribute('aria-disabled') === 'true') return;
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        event.preventDefault();
+        control.click();
+      });
+    });
+
+    initializeConstellationUnlockState();
+    window.addEventListener('pageshow', refreshConstellationUnlockState);
+
+    window.addEventListener('keydown', event => {
+      if (event.key !== 'Escape') return;
+
+      closeDetail();
+      closeDescCards();
+      closeTarotBox();
+      setNavOpen(false);
+    });
+  </script>
+</body>
+</html>
