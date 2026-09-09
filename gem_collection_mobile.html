@@ -1092,103 +1092,119 @@
   }
 }
 .collection-loading {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
 
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1.4rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1.4rem;
 
-  background: #67538b;
+        background:
+          radial-gradient(circle at 18% 18%, rgba(255, 255, 255, 0.88) 0%, rgba(255, 255, 255, 0) 34%),
+          radial-gradient(circle at 82% 22%, rgba(255, 221, 239, 0.82) 0%, rgba(255, 221, 239, 0) 40%),
+          radial-gradient(circle at 74% 82%, rgba(224, 207, 255, 0.88) 0%, rgba(224, 207, 255, 0) 44%),
+          linear-gradient(135deg, #f8dce9 0%, #efdff4 46%, #dddaf6 100%);
 
-  opacity: 1;
-  visibility: visible;
-  transition: opacity 1.1s ease, visibility 1.1s ease;
-}
+        opacity: 1;
+        visibility: visible;
+        transition:
+          opacity 1.1s ease,
+          visibility 1.1s ease;
+      }
 
-.collection-loading.hide {
-  opacity: 0;
-  visibility: hidden;
-}
+      .collection-loading.hide {
+        opacity: 0;
+        visibility: hidden;
+      }
 
-.loading-stone-orbit {
-  position: relative;
-  width: 8.4rem;
-  height: 8.4rem;
-  animation: loadingStoneSpin 5.6s linear infinite;
-}
+      .loading-stone-orbit {
+        position: relative;
+        width: 8.4rem;
+        height: 8.4rem;
+        animation: loadingStoneSpin 5.6s linear infinite;
+      }
 
-.loading-stone-orbit span {
-  position: absolute;
-  left: 50%;
-  top: 50%;
+      .loading-stone-orbit span {
+        position: absolute;
+        left: 50%;
+        top: 50%;
 
-  width: 0.82rem;
-  height: 0.82rem;
-  border-radius: 50%;
+        width: 0.82rem;
+        height: 0.82rem;
+        border-radius: 50%;
 
-  background:
-    radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.452), transparent 26%),
-    radial-gradient(circle, var(--c), color-mix(in srgb, var(--c) 60%, black 40%));
+        background:
+          radial-gradient(
+            circle at 30% 25%,
+            rgba(255, 255, 255, 0.452),
+            transparent 26%
+          ),
+          radial-gradient(
+            circle,
+            var(--c),
+            color-mix(in srgb, var(--c) 60%, black 40%)
+          );
 
-  box-shadow:
-    0 0 0.7rem color-mix(in srgb, var(--c) 65%, transparent),
-    inset 0 0 0.35rem rgba(255,255,255,0.22);
+        box-shadow:
+          0 0 0.7rem color-mix(in srgb, var(--c) 65%, transparent),
+          inset 0 0 0.35rem rgba(255, 255, 255, 0.22);
 
-  transform:
-    translate(-50%, -50%)
-    rotate(calc(var(--i) * 30deg))
-    translateX(3.65rem);
-}
+        transform: translate(-50%, -50%) rotate(calc(var(--i) * 30deg))
+          translateX(3.65rem);
+      }
 
-.loading-stone-orbit::before {
-  content: "";
-  position: absolute;
-  inset: 1.1rem;
-  border-radius: 50%;
-  border: 1px solid rgba(255,255,255,0.12);
-}
+      .loading-stone-orbit::before {
+        content: "";
+        position: absolute;
+        inset: 1.1rem;
+        border-radius: 50%;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+      }
 
-.loading-stone-orbit::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 1rem;
-  height: 1rem;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  background: rgba(255,245,245,0.92);
-  box-shadow:
-    0 0 1rem rgba(255,255,255,0.65),
-    0 0 2rem rgba(255,150,170,0.28);
-}
+      .loading-stone-orbit::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 1rem;
+        height: 1rem;
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(255, 245, 245, 0.92);
+        box-shadow:
+          0 0 1rem rgba(255, 255, 255, 0.65),
+          0 0 2rem rgba(255, 150, 170, 0.28);
+      }
 
-@keyframes loadingStoneSpin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
+      @keyframes loadingStoneSpin {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
 
-.loading-copy {
-  text-align: center;
-}
+      .loading-copy {
+        text-align: center;
+      }
 
-.loading-kicker {
-  margin-bottom: 0.45rem;
-  font-size: 0.68rem;
-  letter-spacing: 0.32em;
-  color: rgba(255,210,220,0.58);
-}
+      .loading-kicker {
+        margin-bottom: 0.45rem;
+        font-size: 0.68rem;
+        letter-spacing: 0.32em;
+        color: rgba(255, 210, 220, 0.58);
+      }
 
-.loading-text {
-  font-size: clamp(0.9rem, 1.1vw, 1.08rem);
-  letter-spacing: 0.08em;
-  color: rgba(255,255,255,0.82);
-}
-.sparkle-layer {
+      .loading-text {
+        font-size: clamp(0.9rem, 1.1vw, 1.08rem);
+        letter-spacing: 0.08em;
+        color: rgba(255, 255, 255, 0.82);
+      }
+      .sparkle-layer {
   position: fixed;
   inset: 0;
   pointer-events: none;
@@ -1443,9 +1459,77 @@
   .loading-stone-orbit { animation: none !important; }
 }
 
+
+    .orientation-lock {
+      position: fixed;
+      inset: 0;
+      z-index: 20000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 28px;
+      text-align: center;
+      background:
+        radial-gradient(circle at 18% 18%, rgba(255,255,255,.9) 0%, rgba(255,255,255,0) 34%),
+        radial-gradient(circle at 82% 22%, rgba(255,221,239,.82) 0%, rgba(255,221,239,0) 40%),
+        radial-gradient(circle at 74% 82%, rgba(224,207,255,.88) 0%, rgba(224,207,255,0) 44%),
+        linear-gradient(135deg, #f8dce9 0%, #efdff4 46%, #dddaf6 100%);
+      color: #5d4d68;
+    }
+
+    .orientation-lock-inner {
+      width: min(340px, 88vw);
+    }
+
+    .orientation-lock-icon {
+      display: block;
+      margin-bottom: 18px;
+      font-size: 42px;
+      line-height: 1;
+      color: #8c7099;
+      animation: orientationTurn 2.2s ease-in-out infinite;
+    }
+
+    .orientation-lock-title {
+      margin: 0;
+      font-family: "Cinzel", serif;
+      font-size: 15px;
+      letter-spacing: .18em;
+      color: #705e7b;
+    }
+
+    .orientation-lock-text {
+      margin: 12px 0 0;
+      font-family: "Noto Sans KR", sans-serif;
+      font-size: 13px;
+      line-height: 1.7;
+      color: rgba(93,77,104,.72);
+      word-break: keep-all;
+    }
+
+    @keyframes orientationTurn {
+      0%, 100% { transform: rotate(0deg); }
+      50% { transform: rotate(90deg); }
+    }
+
+    @media (orientation: landscape) and (max-width: 1180px) {
+      .orientation-lock {
+        display: flex;
+      }
+    }
+
 </style>
 </head>
 <body>
+
+  <div class="orientation-lock" aria-live="polite">
+    <div class="orientation-lock-inner">
+      <span class="orientation-lock-icon" aria-hidden="true">↻</span>
+      <p class="orientation-lock-title">PORTRAIT MODE ONLY</p>
+      <p class="orientation-lock-text">가로 화면은 지원하지 않습니다.<br>기기를 세로 방향으로 돌려주세요.</p>
+    </div>
+  </div>
+
 
 <div class="viewport">
   <div class="game-container">
@@ -1458,28 +1542,28 @@
 <div class="sparkle-layer"></div>
 
 <div id="loadingOverlay" class="collection-loading">
-  <div class="loading-stone-orbit">
-    <span style="--i:0; --c:#ffa0a0;"></span>
-    <span style="--i:1; --c:#aa7cff;"></span>
-    <span style="--i:2; --c:#51abff;"></span>
-    <span style="--i:3; --c:#e0faff;"></span>
-    <span style="--i:4; --c:#44ffc7;"></span>
-    <span style="--i:5; --c:#ffefd0;"></span>
-    <span style="--i:6; --c:#ff7a8e;"></span>
-    <span style="--i:7; --c:#badb90;"></span>
-    <span style="--i:8; --c:#838ad1;"></span>
-    <span style="--i:9; --c:#ffc1e9;"></span>
-    <span style="--i:10; --c:#ddc292;"></span>
-    <span style="--i:11; --c:#39e1ff;"></span>
-  </div>
+      <div class="loading-stone-orbit">
+        <span style="--i: 0; --c: #ffa0a0"></span>
+        <span style="--i: 1; --c: #aa7cff"></span>
+        <span style="--i: 2; --c: #51abff"></span>
+        <span style="--i: 3; --c: #e0faff"></span>
+        <span style="--i: 4; --c: #44ffc7"></span>
+        <span style="--i: 5; --c: #ffefd0"></span>
+        <span style="--i: 6; --c: #ff7a8e"></span>
+        <span style="--i: 7; --c: #badb90"></span>
+        <span style="--i: 8; --c: #838ad1"></span>
+        <span style="--i: 9; --c: #ffc1e9"></span>
+        <span style="--i: 10; --c: #ddc292"></span>
+        <span style="--i: 11; --c: #39e1ff"></span>
+      </div>
 
-  <div class="loading-copy">
-  <div class="loading-kicker">BIRTHSTONE</div>
-  <div class="loading-text">collecting twelve stone...</div>
-</div>
-</div>
+      <div class="loading-copy">
+        <div class="loading-kicker">BIRTHSTONE</div>
+        <div class="loading-text">collecting twelve stones...</div>
+      </div>
+    </div>
 
-  <div class="grain"></div>
+    <div class="grain"></div>
   <main class="page">
     <header class="top-bar">
       <div class="brand">
@@ -1817,7 +1901,7 @@ function deleteMemo(month, id) {
     }
 
     // 모바일은 대기 시간 단축, load 이벤트가 이미 지났어도 동작
-    const loadDelay = isMobile ? 1800 : 3200;
+    const loadDelay = 3200;
     if (document.readyState === 'complete') {
       setTimeout(dismissLoading, loadDelay);
     } else {
