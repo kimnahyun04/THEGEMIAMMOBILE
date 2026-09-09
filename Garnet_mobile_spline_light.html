@@ -6,7 +6,6 @@
   <link rel="preconnect" href="https://prod.spline.design" crossorigin="">
   <link rel="preconnect" href="https://unpkg.com" crossorigin="">
   <title>Garnet · Mobile Spline</title>
-  <!-- prettier-ignore -->
   <style>
     :root {
       --gem-primary: #ff9c9c;
@@ -35,22 +34,32 @@
       font: inherit
     }
 
-    .viewport {
-      position: fixed;
-      inset: 0;
+    .viewport,
+    .game-container {
       width: 100%;
       height: 100%;
       overflow: hidden;
       background: #000
     }
 
+    .viewport {
+      position: fixed;
+      inset: 0
+    }
+
     .game-container {
       position: relative;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background: #000
+      animation: pageFadeIn .8s ease-out both
+    }
+
+    @keyframes pageFadeIn {
+      from {
+        opacity: 0
+      }
+
+      to {
+        opacity: 1
+      }
     }
 
     .top-nav {
@@ -187,7 +196,6 @@
       pointer-events: auto
     }
 
-    /* LIGHT / DARK MODE TOGGLE */
     .mode-toggle {
       position: absolute;
       top: max(1rem, env(safe-area-inset-top));
@@ -230,7 +238,6 @@
       box-shadow: 0 0 12px rgba(255, 120, 120, .58)
     }
 
-    .modal,
     .product-zoom-modal {
       position: fixed;
       inset: 0;
@@ -239,22 +246,13 @@
       transition: .28s
     }
 
-    .modal {
-      z-index: 90
-    }
 
-    .modal.show,
     .product-zoom-modal.show,
     .spline-stage.scenes-open .product-shot {
       opacity: 1;
       pointer-events: auto
     }
 
-    .backdrop {
-      position: absolute;
-      inset: 0;
-      background: rgba(5, 1, 2, .88)
-    }
 
     .round-close {
       border: 1px solid rgba(172, 55, 46, .16);
@@ -287,34 +285,9 @@
       transform: scale(.94)
     }
 
-    .tarot-panel {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      z-index: 1;
-      width: min(90vw, 46rem);
-      transform: translate(-50%, -50%) scale(.96);
-      padding: 2rem;
-      border-radius: 1.2rem;
-      background: rgba(34, 9, 13, .96);
-      border: 1px solid rgba(255, 170, 170, .20);
-      text-align: center;
-      transition: .28s
-    }
 
-    .modal.show .tarot-panel {
-      transform: translate(-50%, -50%) scale(1)
-    }
 
-    .menu-tarot-close {
-      position: absolute;
-      right: .8rem;
-      top: .8rem;
-      width: 2.2rem;
-      height: 2.2rem
-    }
 
-    .menu-tarot-kicker,
     .product-kicker,
     .product-mini-label,
     .product-caption-kicker {
@@ -325,88 +298,22 @@
       color: rgba(150, 48, 40, .62)
     }
 
-    .menu-tarot-kicker {
-      color: rgba(255, 165, 165, .62)
-    }
 
-    .menu-tarot-title,
-    .menu-tarot-result strong,
     .product-title-block h2,
     .product-desc-title {
       font-family: "Cormorant Garamond", serif
     }
 
-    .menu-tarot-title {
-      margin: .5rem 0 0;
-      font-size: 2rem;
-      font-weight: 300;
-      color: #fff4f4
-    }
 
-    .menu-tarot-desc {
-      margin: .7rem 0 1.4rem;
-      color: rgba(255, 220, 220, .68)
-    }
 
-    .menu-tarot-cards {
-      display: flex;
-      justify-content: center;
-      gap: 1rem
-    }
 
-    .menu-tarot-card {
-      width: 8rem;
-      height: 11.5rem;
-      border-radius: .85rem;
-      border: 1px solid rgba(255, 145, 145, .32);
-      background: linear-gradient(180deg, rgba(255, 156, 156, .80), rgba(255, 99, 99, .73));
-      color: #fff;
-      cursor: pointer;
-      transition: .25s
-    }
 
-    .menu-tarot-card span {
-      display: block;
-      margin-bottom: 3rem;
-      font-size: 1.8rem
-    }
 
-    .menu-tarot-card em {
-      font-family: "Jost", sans-serif;
-      font-size: .52rem;
-      letter-spacing: .22em;
-      font-style: normal
-    }
 
-    .menu-tarot-card.picked {
-      transform: translateY(-6px) scale(1.03)
-    }
 
-    .menu-tarot-card.dimmed {
-      opacity: .25;
-      pointer-events: none
-    }
 
-    .menu-tarot-result {
-      min-height: 4rem;
-      margin-top: 1rem;
-      opacity: 0;
-      transform: translateY(8px);
-      color: rgba(255, 230, 230, .82);
-      line-height: 1.65;
-      transition: .3s
-    }
 
-    .menu-tarot-result.show {
-      opacity: 1;
-      transform: none
-    }
 
-    .menu-tarot-result strong {
-      display: block;
-      color: #fff;
-      font-size: 1.12rem
-    }
 
     .spline-stage {
       position: absolute;
@@ -700,32 +607,31 @@
 
     .mood-swipe-guide {
       position: absolute;
-      left: 85.5%;
+      left: 87%;
       top: 54%;
       z-index: 35;
       display: none;
       align-items: center;
-      gap: .3rem;
+      gap: .26rem;
       padding: 0;
       transform: translate(-50%, -50%);
-      color: rgba(110, 28, 22, .8);
-      font-family: "Cormorant Garamond", serif;
-      font-size: .62rem;
-      font-weight: 600;
-      letter-spacing: .075em;
+      color: var(--deep);
+      font-family: "Jost", sans-serif;
+      font-size: .56rem;
+      font-weight: 500;
+      letter-spacing: .06em;
       white-space: nowrap;
       pointer-events: none;
-      text-shadow: 0 1px 0 rgba(255, 255, 255, .98), 0 0 8px rgba(255, 255, 255, .86), 0 2px 12px rgba(120, 30, 24, .18);
+      text-shadow: none;
       animation: moodSwipeFloat 2.4s ease-in-out infinite;
       transition: opacity .28s ease, visibility .28s ease
     }
 
     .mood-swipe-guide-arrow {
       display: inline-block;
-      color: rgba(110, 28, 22, .86);
+      color: inherit;
       font-family: "Jost", sans-serif;
-      font-size: .9rem;
-      font-weight: 500;
+      font-size: .78rem;
       line-height: 1;
       animation: moodSwipeNudge 1.7s ease-in-out infinite
     }
@@ -968,29 +874,10 @@
         min-height: 100dvh
       }
 
-      .tarot-panel {
-        width: 92vw;
-        padding: 1.5rem 1rem
-      }
 
-      .menu-tarot-title {
-        font-size: 1.55rem
-      }
 
-      .menu-tarot-cards {
-        gap: .45rem
-      }
 
-      .menu-tarot-card {
-        width: 27vw;
-        max-width: 6.4rem;
-        height: 9rem
-      }
 
-      .menu-tarot-card span {
-        margin-bottom: 2.1rem;
-        font-size: 1.45rem
-      }
 
       .gem-product-layout::before {
         width: 94vw;
@@ -1259,19 +1146,8 @@
         left: .65rem
       }
 
-      .tarot-panel {
-        max-height: 90vh;
-        overflow: auto
-      }
 
-      .menu-tarot-card {
-        width: 6.2rem;
-        height: 8rem
-      }
 
-      .menu-tarot-card span {
-        margin-bottom: 1.6rem
-      }
 
       .gem-product-layout::before {
         width: 95vw;
@@ -1419,7 +1295,7 @@
         left: 82%;
         top: 55%;
         padding: 0;
-        font-size: .5rem
+        font-size: .52rem
       }
 
       .viewport,
@@ -1667,42 +1543,13 @@
         padding-right: .2rem
       }
 
-      .tarot-panel {
-        width: 88vw;
-        max-height: 90dvh;
-        padding: .8rem 1rem;
-        overflow-y: auto
-      }
 
-      .menu-tarot-title {
-        margin-top: .25rem;
-        font-size: 1.2rem
-      }
 
-      .menu-tarot-desc {
-        margin: .3rem 0 .6rem;
-        font-size: .72rem
-      }
 
-      .menu-tarot-card {
-        width: 5rem;
-        height: 5.8rem
-      }
 
-      .menu-tarot-card span {
-        margin-bottom: .8rem;
-        font-size: 1.1rem
-      }
 
-      .menu-tarot-result {
-        min-height: 2rem;
-        margin-top: .45rem;
-        font-size: .72rem;
-        line-height: 1.35
-      }
     }
 
-    /* MOBILE MOOD EXPERIENCE */
     .mobile-mood {
       position: fixed;
       inset: 0;
@@ -2046,9 +1893,6 @@
           <button class="nav-link" id="collectGemLink" type="button">
             COLLECT YOUR GEM
           </button>
-          <button class="nav-link" id="todayTarotLink" type="button">
-            오늘 운세보기
-          </button>
         </div>
       </div>
       <button class="mode-toggle" id="modeToggle" type="button" aria-label="다크 모드로 전환" title="Dark mode">
@@ -2065,7 +1909,7 @@
             <h2>GARNET<br>OBJECT</h2>
           </div>
           <div class="product-mini-label">
-            JANUARY BIRTHSTONE<br>HANDCRAFTED 3D SCENE
+            JANUARY BIRTHSTONE
           </div>
           <div class="product-guide-line"></div>
           <div class="product-guide-split product-guide-left" aria-hidden="true"></div>
@@ -2211,40 +2055,16 @@
         </div>
       </div>
       <button class="back-btn" id="backBtn" type="button">← Return to Overview</button>
-      <div class="modal" id="menuTarotModal" aria-hidden="true" inert>
-        <div class="backdrop" id="menuTarotBackdrop"></div>
-        <div class="tarot-panel" role="dialog" aria-modal="true" aria-labelledby="menuTarotTitle">
-          <button class="round-close menu-tarot-close" id="menuTarotClose" aria-label="닫기" type="button">
-            ×
-          </button>
-          <div class="menu-tarot-kicker">GARNET TAROT</div>
-          <h2 class="menu-tarot-title" id="menuTarotTitle">Choose Your Card</h2>
-          <p class="menu-tarot-desc">
-            오늘의 흐름을 알고 싶다면 카드 한 장을 골라보세요.
-          </p>
-          <div class="menu-tarot-cards" id="menuTarotCards">
-            <button class="menu-tarot-card" type="button">
-              <span>Ⅰ</span><em>GARNET</em>
-            </button>
-            <button class="menu-tarot-card" type="button">
-              <span>Ⅱ</span><em>GARNET</em>
-            </button>
-            <button class="menu-tarot-card" type="button">
-              <span>Ⅲ</span><em>GARNET</em>
-            </button>
-          </div>
-          <div class="menu-tarot-result" id="menuTarotResult" role="status" aria-live="polite"></div>
-        </div>
-      </div>
       <audio id="clickSound" preload="auto" src="ting.mp3"></audio>
       <div class="transition-overlay" id="transitionOverlay" aria-hidden="true"></div>
     </div>
   </div>
-  <!-- prettier-ignore -->
   <script>
     const $ = s => document.querySelector(s);
     const $$ = s => document.querySelectorAll(s);
     const nav = $('#topNav');
+    const menuButton = $('#menuToggleBtn');
+    const menu = $('#navMenu');
     const overlay = $('#transitionOverlay');
     const stage = $('#splineStage');
     const gem = $('#centerLightSpline');
@@ -2255,16 +2075,18 @@
     const descTabs = $$('.product-desc-tab');
     const productShots = $$('.product-shot');
     const zoom = $('#productZoomModal');
+    const zoomClose = $('#productZoomClose');
     const zoomImg = $('#productZoomImg');
     const zoomTitle = $('#productZoomTitle');
     const zoomCopy = $('#productZoomCopy');
     const clickSound = $('#clickSound');
-    const tarotModal = $('#menuTarotModal');
     const mobileMood = $('#mobileMood');
     const mobileMoodShell = $('#mobileMoodShell');
     const mobileMoodCharacter = $('#mobileMoodCharacter');
     const mobileMoodCharacterCap = $('#mobileMoodCharacterCap');
     const moodSwipeGuide = $('#moodSwipeGuide');
+    const mobileMoodClose = $('#mobileMoodClose');
+    const mobileMoodCards = $$('.mobile-mood-card');
     const descriptionContent = {
       primary: {
         title: 'The Deep Fire of Garnet',
@@ -2314,21 +2136,10 @@
         copy: '작은 가넷 스터드와 클래식 펜던트, 가느다란 실버 링을 가볍게 매치해 보세요.'
       }
     };
-    const tarot = [
-      ['1월의 붉은빛', '이번 달 당신의 흐름은 단단하고 선명해집니다. 망설임보다 진심을 선택해 보세요.'],
-      ['숨은 용기', '예상하지 못한 순간에 앞으로 나아갈 힘이 생깁니다. 작은 결심을 가볍게 넘기지 마세요.'],
-      ['관계의 진심', '오래 곁을 지킨 사람에게 답이 있습니다. 솔직한 한마디가 관계를 더 깊게 만듭니다.'],
-      ['붉은 의지', '지쳤다고 느껴도 당신 안의 열정은 아직 살아 있습니다. 이번 주 다시 강하게 타오릅니다.'],
-      ['금전의 흐름', '작은 지출을 정리하면 새로운 여유가 생깁니다. 단단한 선택이 안정으로 이어집니다.'],
-      ['감정의 회복', '무거웠던 마음이 천천히 풀립니다. 오래 기다리던 진심이 뜻밖의 위로가 됩니다.'],
-      ['가넷의 축복', '1월생의 기운이 강하게 열립니다. 당신이 원하는 방향으로 흐름이 움직입니다.']
-    ];
     let touchStart = null;
     let lastTap = 0;
-    let lastZoom = 0;
     let isNavigating = false;
     let zoomReturnFocus = null;
-    let tarotReturnFocus = null;
     let mobileMoodReturnFocus = null;
     let mobileMoodSwipeStart = null;
     let mobileMoodCharacterRequestId = 0;
@@ -2344,7 +2155,7 @@
 
     document.addEventListener('click', event => {
       if (!(event.target instanceof Element)) return;
-      const control = event.target.closest('button, .product-shot, .backdrop, .mobile-mood-card');
+      const control = event.target.closest('button, .product-shot, .mobile-mood-card');
       if (!control || control.matches('button:disabled')) return;
       playClickSound();
     }, true);
@@ -2360,33 +2171,6 @@
     }
     function goCollectGem() {
       fade('gem_collection_mobile.html', 700);
-    }
-    function resetTarot() {
-      const result = $('#menuTarotResult');
-      result.classList.remove('show');
-      result.innerHTML = '';
-      $$('.menu-tarot-card').forEach(card => {
-        card.disabled = false;
-        card.classList.remove('picked', 'dimmed');
-      });
-    }
-    function openTarotBox(event) {
-      event && event.stopPropagation();
-      tarotReturnFocus = $('#menuToggleBtn');
-      setNavOpen(false);
-      tarotModal.removeAttribute('inert');
-      tarotModal.setAttribute('aria-hidden', 'false');
-      tarotModal.classList.add('show');
-      resetTarot();
-      requestAnimationFrame(() => $('#menuTarotClose').focus());
-    }
-    function closeTarotBox() {
-      if (!tarotModal.classList.contains('show')) return;
-      tarotModal.classList.remove('show');
-      tarotModal.setAttribute('aria-hidden', 'true');
-      tarotModal.setAttribute('inert', '');
-      tarotReturnFocus?.focus();
-      tarotReturnFocus = null;
     }
 
     function renderMobileMoodInline(data) {
@@ -2437,7 +2221,7 @@
 
     function collapseMoodCards() {
       let hadExpandedCard = false;
-      $$('.mobile-mood-card').forEach(card => {
+      mobileMoodCards.forEach(card => {
         if (card.classList.contains('expanded')) hadExpandedCard = true;
         setMoodCardExpanded(card, false);
       });
@@ -2465,7 +2249,7 @@
       mobileMood.setAttribute('aria-hidden', 'false');
       mobileMood.classList.add('show');
       mobileMoodShell.scrollTop = 0;
-      requestAnimationFrame(() => $('#mobileMoodClose').focus());
+      requestAnimationFrame(() => mobileMoodClose.focus());
     }
 
     function closeMobileMood() {
@@ -2480,8 +2264,6 @@
     }
 
     function setNavOpen(isOpen) {
-      const menuButton = $('#menuToggleBtn');
-      const menu = $('#navMenu');
       nav.classList.toggle('open', isOpen);
       menuButton.setAttribute('aria-expanded', String(isOpen));
       menuButton.setAttribute('aria-label', isOpen ? '메뉴 닫기' : '메뉴 열기');
@@ -2532,9 +2314,7 @@
     }
 
     function openZoom(src, sceneIndex) {
-      const now = Date.now();
-      if (now - lastZoom < 280) return;
-      lastZoom = now;
+      if (zoom.classList.contains('show')) return;
       const scene = sceneNotes[sceneIndex] || sceneNotes[0];
       zoomReturnFocus = document.activeElement;
       zoomImg.src = src;
@@ -2543,7 +2323,7 @@
       zoom.removeAttribute('inert');
       zoom.classList.add('show');
       zoom.setAttribute('aria-hidden', 'false');
-      requestAnimationFrame(() => $('#productZoomClose').focus());
+      requestAnimationFrame(() => zoomClose.focus());
     }
     function closeZoom() {
       if (!zoom.classList.contains('show')) return;
@@ -2553,45 +2333,35 @@
       zoomReturnFocus?.focus();
       zoomReturnFocus = null;
     }
-    $('#menuToggleBtn').onclick = event => {
+    menuButton.onclick = event => {
       event.stopPropagation();
       setNavOpen(!nav.classList.contains('open'));
     };
     $('#mainMenuLink').onclick = goMenu;
     $('#collectGemLink').onclick = goCollectGem;
-    $('#todayTarotLink').onclick = openTarotBox;
     window.addEventListener('click', event => {
       if (!nav.contains(event.target)) setNavOpen(false);
     });
-    $('#menuTarotBackdrop').onclick = closeTarotBox;
-    $('#menuTarotClose').onclick = closeTarotBox;
-    $('#menuTarotCards').onclick = event => {
-      const card = event.target.closest('.menu-tarot-card');
-      if (!card) return;
-      const message = tarot[Math.floor(Math.random() * tarot.length)];
-      const result = $('#menuTarotResult');
-      $$('.menu-tarot-card').forEach(item => {
-        item.disabled = true;
-        item === card ? item.classList.add('picked') : item.classList.add('dimmed');
-      });
-      result.innerHTML = `<strong>${message[0]}</strong>${message[1]}`;
-      setTimeout(() => result.classList.add('show'), 220);
-    };
-    gem.addEventListener('pointerdown', event => {
-      if (event.isPrimary === false) return;
+    const gestureBlocked = target => target instanceof Element &&
+      target.closest('button, a, input, textarea, select, .product-shot, .product-description-card');
+
+    stage.addEventListener('pointerdown', event => {
+      if (event.isPrimary === false || gestureBlocked(event.target)) return;
       touchStart = {
         id: event.pointerId,
         x: event.clientX,
         y: event.clientY,
-        t: performance.now()
+        t: performance.now(),
+        insideGem: isInsideGem(event.clientX, event.clientY)
       };
     }, true);
-    gem.addEventListener('pointerup', event => {
+    window.addEventListener('pointerup', event => {
       if (!touchStart || touchStart.id !== event.pointerId) return;
-      const deltaX = event.clientX - touchStart.x;
-      const deltaY = event.clientY - touchStart.y;
+      const gesture = touchStart;
+      const deltaX = event.clientX - gesture.x;
+      const deltaY = event.clientY - gesture.y;
       const distance = Math.hypot(deltaX, deltaY);
-      const time = performance.now() - touchStart.t;
+      const time = performance.now() - gesture.t;
       touchStart = null;
       const horizontalSwipe = Math.abs(deltaX) >= 52 && Math.abs(deltaX) > Math.abs(deltaY) * 1.2 && time <= 1300;
       if (horizontalSwipe) {
@@ -2601,9 +2371,8 @@
         openMobileMood();
         return;
       }
-      if (distance <= 18 && time <= 700 && isInsideGem(event.clientX, event.clientY)) tapGem();
+      if (gesture.insideGem && distance <= 18 && time <= 700 && isInsideGem(event.clientX, event.clientY)) tapGem();
     }, true);
-    gem.addEventListener('pointercancel', () => touchStart = null, true);
     gem.onclick = event => {
       if (performance.now() < suppressGemClickUntil) {
         event.preventDefault();
@@ -2614,8 +2383,8 @@
       if (isInsideGem(event.clientX, event.clientY)) tapGem();
     };
 
-    $('#mobileMoodClose').onclick = closeMobileMood;
-    $$('.mobile-mood-card').forEach(card => {
+    mobileMoodClose.onclick = closeMobileMood;
+    mobileMoodCards.forEach(card => {
       const toggleCard = () => toggleMobileMoodCard(card);
       card.addEventListener('click', toggleCard);
       card.addEventListener('keydown', event => {
@@ -2633,17 +2402,19 @@
         t: performance.now()
       };
     });
-    mobileMoodShell.addEventListener('pointerup', event => {
+    window.addEventListener('pointerup', event => {
       if (!mobileMoodSwipeStart || mobileMoodSwipeStart.id !== event.pointerId) return;
       const deltaX = event.clientX - mobileMoodSwipeStart.x;
       const deltaY = event.clientY - mobileMoodSwipeStart.y;
       const time = performance.now() - mobileMoodSwipeStart.t;
       mobileMoodSwipeStart = null;
       if (deltaX >= 58 && Math.abs(deltaX) > Math.abs(deltaY) * 1.2 && time <= 1300) closeMobileMood();
-    });
-    mobileMoodShell.addEventListener('pointercancel', () => mobileMoodSwipeStart = null);
+    }, true);
+    window.addEventListener('pointercancel', () => {
+      touchStart = mobileMoodSwipeStart = null;
+    }, true);
 
-    $$('.product-shot').forEach(shot => {
+    productShots.forEach(shot => {
       let zoomStart = null;
       const img = shot.querySelector('img');
       const sceneIndex = Number(shot.dataset.sceneIndex);
@@ -2668,6 +2439,7 @@
       shot.addEventListener('click', event => {
         event.preventDefault();
         event.stopPropagation();
+        if (event.detail !== 0) return;
         openZoom(img.currentSrc || img.src, sceneIndex);
       }, true);
       shot.addEventListener('keydown', event => {
@@ -2676,7 +2448,7 @@
         shot.click();
       });
     });
-    $('#productZoomClose').onclick = closeZoom;
+    zoomClose.onclick = closeZoom;
     zoom.onclick = event => {
       if (event.target !== zoom) return;
       playClickSound();
@@ -2701,7 +2473,7 @@
     showDescription('primary');
     setNavOpen(false);
     ['pointerdown', 'pointerup', 'click'].forEach(type => {
-      $('#productDescriptionCard').addEventListener(type, event => event.stopPropagation());
+      descCard.addEventListener(type, event => event.stopPropagation());
     });
     $('#backBtn').onclick = () => fade('Garnet_mobile_info.html', 500);
     $('#modeToggle').onclick = event => {
@@ -2731,7 +2503,6 @@
     window.addEventListener('keydown', event => {
       if (mobileMood.classList.contains('show')) trapFocus(mobileMoodShell, event);
       else if (zoom.classList.contains('show')) trapFocus(zoom, event);
-      else if (tarotModal.classList.contains('show')) trapFocus(tarotModal, event);
       if (event.key === 'Escape') {
         if (collapseMoodCards()) return;
         if (mobileMood.classList.contains('show')) {
@@ -2739,7 +2510,6 @@
           return;
         }
         closeZoom();
-        closeTarotBox();
         setNavOpen(false);
       }
     });
