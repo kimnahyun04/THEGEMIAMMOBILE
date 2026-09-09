@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;family=Noto+Sans+KR:wght@400;500;600;700;800;900&amp;display=swap" />
+<title>CONSTELLATION SCAN QUIZ · MOBILE</title>
+<link rel="preload" href="zodiac_pixel_star_4point.png" as="image" type="image/png" />
+<link rel="preload" href="zodiac_pixel_star_5point.png" as="image" type="image/png" />
+<style>
+  :root{
+    --muted:#8d97b7;
+    --white:#f7f9ff;
+  }
+  *{box-sizing:border-box}
+  html{min-height:100%;background:#03050d;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+  body{margin:0;min-height:100dvh;display:grid;place-items:center;padding:18px;overflow-x:hidden;overscroll-behavior-y:none;background:#03050d;color:var(--white);font-family:Inter,"Noto Sans KR",system-ui,sans-serif}
+  button,a{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+  .game-shell{
+    width:min(1120px,100%);height:min(780px,calc(100vh - 36px));min-height:590px;
+    margin:0;display:flex;flex-direction:column;position:relative;overflow:hidden;
+    border:1px solid rgba(255,255,255,.16);border-radius:26px;
+    background:radial-gradient(circle at 52% 18%,rgba(124,151,255,.12),transparent 32%),linear-gradient(180deg,#0a0d1d 0%,#060914 55%,#040611 100%);
+    box-shadow:0 26px 90px rgba(0,0,0,.42),inset 0 1px rgba(255,255,255,.05)
+  }
+  .topbar{min-height:72px;padding:15px 22px;display:flex;align-items:center;justify-content:space-between;gap:16px;border-bottom:1px solid rgba(255,255,255,.11);background:rgba(7,10,22,.82);backdrop-filter:blur(12px)}
+  .brand{display:flex;align-items:center;gap:12px;min-width:0}
+  .brand-mark{width:38px;height:38px;display:grid;place-items:center;flex:0 0 auto;border:1px solid rgba(255,255,255,.28);border-radius:50%;font-size:18px;box-shadow:0 0 24px rgba(145,177,255,.18) inset}
+  .brand h1{margin:0 0 4px;white-space:nowrap;font:500 clamp(20px,3vw,31px)/1 Georgia,serif;letter-spacing:.08em}
+  .brand p{margin:0;font-size:10px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
+  .hud{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+  .hud-box{min-width:74px;padding:8px 9px;border:1px solid rgba(255,255,255,.12);border-radius:12px;background:rgba(255,255,255,.035);text-align:center}
+  .hud-box span{display:block;margin-bottom:4px;color:#7f89a8;font-size:8px;letter-spacing:.16em}
+  .hud-box strong{font-size:15px;letter-spacing:.04em}
+  .hud-box.lives-box strong{color:var(--white);font-size:13px;letter-spacing:.1em}
+  .game-area{display:grid;grid-template-columns:minmax(0,1fr) 300px;flex:1;min-height:0}
+  .space-wrap{position:relative;min-width:0;min-height:0;overflow:hidden}
+  #space{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;image-rendering:pixelated;background:radial-gradient(circle at 22% 15%,rgba(128,89,255,.08),transparent 27%),radial-gradient(circle at 80% 78%,rgba(88,164,255,.06),transparent 31%)}
+  .scanline{position:absolute;inset:0;pointer-events:none;opacity:.14;background:repeating-linear-gradient(180deg,rgba(255,255,255,.04) 0 1px,transparent 1px 4px)}
+  .corner-label{position:absolute;left:18px;top:16px;z-index:3;font-size:10px;letter-spacing:.14em;color:#7580a3}
+  .time-meter{position:absolute;left:50%;bottom:61px;z-index:4;transform:translateX(-50%);width:min(450px,78%);height:5px;overflow:hidden;border:1px solid rgba(255,255,255,.12);border-radius:99px;background:rgba(7,10,24,.72)}
+  .time-meter i{display:block;width:100%;height:100%;border-radius:inherit;background:linear-gradient(90deg,#92b5ff,#c6b0ff,#f0b6df);transition:width .12s linear}
+  .time-meter i.urgent{background:linear-gradient(90deg,#ff8caa,#f0b6df)}
+  .status-pill{position:absolute;left:50%;bottom:18px;z-index:4;transform:translateX(-50%);min-width:min(450px,78%);padding:10px 16px;border:1px solid rgba(255,255,255,.14);border-radius:999px;background:rgba(7,10,24,.74);backdrop-filter:blur(10px);text-align:center;font-size:10px;letter-spacing:.04em;color:#dce4ff}
+  .side{min-height:0;overflow:auto;border-left:1px solid rgba(255,255,255,.1);padding:16px;display:flex;flex-direction:column;gap:10px;background:linear-gradient(180deg,rgba(15,19,40,.84),rgba(8,11,24,.92))}
+  .panel{padding:14px;border:1px solid rgba(255,255,255,.1);border-radius:16px;background:rgba(255,255,255,.025)}
+  .panel-label{margin-bottom:9px;font-size:9px;letter-spacing:.15em;color:#7f89b7}
+  .mystery{margin:2px 0 5px;text-align:center;color:var(--white);font:500 22px/1.2 Georgia,serif;letter-spacing:.1em;text-shadow:0 0 24px rgba(178,197,255,.28)}
+  .mystery-sub{text-align:center;font-size:9px;color:#7f89a8;letter-spacing:.1em}
+  .level-tag{margin:10px auto 0;width:max-content;max-width:100%;padding:5px 8px;border:1px solid rgba(180,197,255,.27);border-radius:99px;background:rgba(146,181,255,.08);color:#c6d0ff;font-size:8px;letter-spacing:.04em}
+  .rule{font-size:10px;line-height:1.72;color:#aab3cf}
+  .rule b{color:#eef2ff;font-weight:normal}
+  .answer-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+  button{appearance:none;min-height:42px;padding:0 9px;border:1px solid rgba(255,255,255,.16);border-radius:11px;background:rgba(255,255,255,.055);color:#f2f5ff;font:inherit;font-size:10px;letter-spacing:.04em;cursor:pointer;transition:.18s ease}
+  button:hover{background:rgba(255,255,255,.09);box-shadow:0 0 12px rgba(145,177,255,.16)}
+  button:active{transform:translateY(1px)}
+  button:disabled{opacity:.42;cursor:default;box-shadow:none;transform:none}
+  button.primary{border-color:rgba(180,197,255,.33);background:linear-gradient(180deg,rgba(161,183,255,.22),rgba(128,115,255,.13))}
+  .answer-btn{min-height:48px;line-height:1.25}
+  .answer-btn small{display:block;margin-top:3px;color:#7984a5;font-size:8px;letter-spacing:.08em}
+  .answer-btn.correct{border-color:rgba(185,255,234,.52);background:rgba(185,255,234,.09);color:#f7fffc}
+  .answer-btn.wrong{border-color:rgba(255,140,170,.42);background:rgba(255,140,170,.08)}
+  .hint-box{min-height:61px;display:flex;flex-direction:column;gap:5px}
+  .hint-line{font-size:9px;line-height:1.55;color:#aab3cf;padding-left:10px;position:relative}
+  .hint-line::before{content:'·';position:absolute;left:1px;color:#dfe8ff}
+  .hint-empty{font-size:9px;line-height:1.6;color:#626d8d}
+  .hint-button{width:100%;margin-top:9px}
+  .progress-title{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:8px;font-size:9px;color:#8d97b7}
+  .bar{height:7px;overflow:hidden;border:1px solid rgba(255,255,255,.1);border-radius:999px;background:#080b19}
+  .bar>i{display:block;width:0;height:100%;background:linear-gradient(90deg,#92b5ff,#c6b0ff,#f0b6df);transition:width .18s ease}
+  .mini-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+  .mini-star{height:29px;display:grid;place-items:center;padding:0 4px;border:1px solid rgba(255,255,255,.09);border-radius:8px;background:rgba(255,255,255,.02);color:#66708f;font-size:8px;line-height:1;text-align:center;word-break:keep-all}
+  .mini-star.done{border-color:rgba(188,206,255,.34);background:rgba(133,167,255,.10);color:#fff;box-shadow:inset 0 0 14px rgba(146,183,255,.08)}
+  .button-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:auto}
+  #difficultyBtn{grid-column:1/-1}
+  .overlay{position:absolute;inset:0;z-index:20;display:grid;place-items:center;padding:24px;background:rgba(3,5,14,.64);backdrop-filter:blur(8px);transition:opacity .28s ease}
+  .overlay.hidden{opacity:0;pointer-events:none}
+  .modal{width:min(520px,100%);padding:28px 26px 24px;border:1px solid rgba(255,255,255,.18);border-radius:22px;background:linear-gradient(180deg,rgba(17,22,47,.96),rgba(8,11,26,.96));text-align:center;box-shadow:0 24px 70px rgba(0,0,0,.36)}
+  .modal-symbol{margin-bottom:10px;color:#eef3ff;font:58px/1 Georgia,serif;text-shadow:0 0 26px rgba(188,203,255,.34)}
+  .modal h2{margin:0 0 12px;font:500 19px/1.35 Georgia,serif;letter-spacing:.12em}
+  .modal p{margin:0 0 19px;font-size:10px;line-height:1.9;color:#a8b1cd}
+  .modal p b{color:#fff;font-weight:normal}
+  .modal button{min-width:170px}
+  .difficulty-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:17px}
+  .difficulty-btn{min-width:0!important;min-height:88px;padding:12px 8px;border-color:rgba(180,197,255,.3);border-radius:14px;background:rgba(143,179,255,.05)}
+  .difficulty-btn strong{display:block;margin-bottom:7px;font:500 15px/1 Georgia,serif;letter-spacing:.08em}
+  .difficulty-btn span{display:block;color:#98a3c3;font-size:8px;line-height:1.65;letter-spacing:.02em;word-break:keep-all}
+  .difficulty-status{min-height:18px;margin-top:11px;color:#7f89a8;font-size:8px;letter-spacing:.08em}
+  .modal-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .modal-actions button{min-width:0}
+  .modal-hub{width:100%;margin-top:8px}
+  .musicBar{position:relative;z-index:25;flex:none;min-height:42px;padding:7px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:1px solid rgba(255,255,255,.1);background:rgba(0,0,0,.1)}
+  .musicCredit{min-width:0;color:var(--muted);font-size:9px;line-height:1.35;letter-spacing:.02em}
+  .musicCredit strong{color:var(--white);font-weight:800}
+  .musicCredit a{color:inherit;text-decoration:none}
+  .musicCredit a:hover{text-decoration:underline}
+  .musicToggle{flex:none;min-width:92px;min-height:30px;padding:7px 11px;border:1px solid rgba(255,255,255,.14);border-radius:999px;background:rgba(255,255,255,.06);color:var(--white);cursor:pointer;font-size:9px;font-weight:900;letter-spacing:.07em;transition:.16s}
+  .musicToggle:hover{transform:translateY(-1px);background:rgba(255,255,255,.1)}
+  .musicToggle.off{opacity:.58}
+  .spline-loading{position:fixed;inset:0;z-index:200;display:grid;place-items:center;background:radial-gradient(circle at 50% 42%,rgba(143,179,255,.16),transparent 30%),radial-gradient(circle at 18% 16%,rgba(92,121,214,.20),transparent 26%),radial-gradient(circle at 84% 14%,rgba(86,132,232,.14),transparent 24%),linear-gradient(180deg,#0d1530 0%,#091126 52%,#050915 100%);opacity:1;visibility:visible;pointer-events:auto;transition:opacity .65s cubic-bezier(.22,1,.36,1),visibility 0s linear .65s}
+  .spline-loading.is-hidden{opacity:0;visibility:hidden;pointer-events:none}
+  .spline-loading-inner{width:min(38vw,260px);text-align:center;color:rgba(220,228,255,.76)}
+  .spline-loading-title{display:block;margin-bottom:.8rem;font-size:clamp(13px,1.05vw,18px);font-weight:500;letter-spacing:.24em}
+  .spline-loading-line{position:relative;width:100%;height:1px;overflow:hidden;background:rgba(143,179,255,.18)}
+  .spline-loading-line::after{content:"";position:absolute;inset:0 auto 0 0;width:42%;background:linear-gradient(90deg,transparent,rgba(143,179,255,.95),rgba(184,166,255,.95),rgba(240,182,223,.72),transparent);animation:splineLoadingSweep 1.15s ease-in-out infinite}
+  @keyframes splineLoadingSweep{from{transform:translateX(-120%)}to{transform:translateX(340%)}}
+  body.is-loading .game-shell{opacity:0;transform:translateY(8px)}
+  body.is-ready .game-shell{opacity:1;transform:none;transition:opacity .65s cubic-bezier(.22,1,.36,1),transform .65s cubic-bezier(.22,1,.36,1)}
+  .flash{position:absolute;inset:0;z-index:10;pointer-events:none;opacity:0;background:rgba(255,255,255,.09)}
+  .flash.good{animation:goodflash .36s ease}
+  .flash.bad{background:rgba(255,80,128,.12);animation:badflash .34s ease}
+  @keyframes goodflash{0%{opacity:0}35%{opacity:1}100%{opacity:0}}
+  @keyframes badflash{0%{opacity:0}35%{opacity:1}100%{opacity:0}}
+  @media(prefers-reduced-motion:reduce){.spline-loading-line::after{animation:none;left:29%}body.is-ready .game-shell{transition:none}}
+  @media(max-width:920px){.topbar{align-items:flex-start}.hud{gap:5px}.hud-box{min-width:66px;padding:7px}.hud-box strong{font-size:13px}}
+  @media(max-width:820px){
+    body{display:block;min-height:100dvh;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);background:#040611}
+    .game-shell{width:100%;height:auto;min-height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom));border-radius:0;border-left:0;border-right:0}
+    .topbar{padding:12px 14px}.brand p{display:none}.brand h1{font-size:18px}.brand-mark{width:34px;height:34px;font-size:17px}
+    .game-area{grid-template-columns:1fr;min-height:0}.space-wrap{height:62dvh;min-height:430px}
+    .side{border-left:0;border-top:1px solid rgba(255,255,255,.1);display:grid;grid-template-columns:1fr 1fr;padding:12px}.panel{padding:12px}.button-row{grid-column:1/-1;margin-top:0}.mini-grid{grid-template-columns:repeat(4,1fr)}
+    button{min-height:44px}.musicBar{padding:7px 10px}.musicCredit{font-size:8px}.musicToggle{min-height:44px}
+    .overlay{position:fixed;padding:max(14px,env(safe-area-inset-top)) max(14px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left));overflow-y:auto;overscroll-behavior:contain}
+    .modal{max-height:calc(100dvh - 28px);overflow-y:auto;-webkit-overflow-scrolling:touch}
+    .spline-loading-inner{width:min(68vw,260px)}
+  }
+  @media(max-width:520px){
+    .topbar{flex-direction:column;gap:10px}.hud{width:100%;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}.hud-box{min-width:0;padding:7px 3px}.hud-box span{font-size:7px;letter-spacing:.08em}.hud-box strong{font-size:12px}.hud-box.lives-box strong{font-size:10px;letter-spacing:0}
+    .side{grid-template-columns:1fr}.mini-grid{grid-template-columns:repeat(4,1fr)}.space-wrap{height:58dvh;min-height:390px}
+    .status-pill{width:calc(100% - 24px);min-width:0;padding:9px 10px;font-size:9px;bottom:12px}.time-meter{width:calc(100% - 48px);bottom:52px}.corner-label{font-size:8px;left:12px;top:12px}.modal{padding:25px 19px 22px}.modal h2{font-size:16px}.modal p{font-size:10px}
+    .difficulty-grid{grid-template-columns:1fr}.difficulty-btn{min-height:58px}.difficulty-btn strong{margin-bottom:4px}.musicToggle{min-width:84px;padding:7px 9px}
+  }
+  @media(orientation:landscape) and (max-height:560px) and (max-width:950px){
+    body{display:block;min-height:100dvh;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);background:#040611}
+    .game-shell{width:100%;height:auto;min-height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom));border-radius:0;border-left:0;border-right:0}
+    .topbar{min-height:60px;padding:10px 14px;align-items:center}.brand p{display:none}.brand h1{font-size:18px}.brand-mark{width:34px;height:34px;font-size:17px}
+    .hud{display:flex;width:auto;gap:4px;flex-wrap:nowrap}.hud-box{min-width:56px;padding:6px 5px}.hud-box span{font-size:7px}.hud-box strong{font-size:12px}.hud-box.lives-box strong{font-size:10px;letter-spacing:0}
+    .game-area{grid-template-columns:minmax(0,1fr) clamp(220px,31vw,270px);min-height:420px}.space-wrap{height:auto;min-height:420px}
+    .side{display:flex;border-top:0;border-left:1px solid rgba(255,255,255,.1);padding:10px;gap:8px}.panel{padding:10px}.mystery{font-size:18px}.rule{font-size:9px;line-height:1.55}.answer-grid{gap:5px}.answer-btn{min-height:44px}.mini-grid{gap:4px}.mini-star{height:27px}
+    .button-row{grid-column:auto;margin-top:auto}.musicBar{padding:7px 10px}.musicCredit{font-size:8px}.musicToggle{min-height:44px}
+    .overlay{position:fixed;padding:max(10px,env(safe-area-inset-top)) max(14px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left));overflow-y:auto;overscroll-behavior:contain}
+    .modal{max-height:calc(100dvh - 20px);overflow-y:auto;-webkit-overflow-scrolling:touch}
+    .difficulty-grid{grid-template-columns:repeat(3,1fr)}
+    .spline-loading-inner{width:min(48vw,260px)}
+  }
+  @media(hover:none),(pointer:coarse){
+    button:hover{box-shadow:none}
+    .musicToggle:hover{transform:none}
+  }
+</style>
+</head>
+<body class="is-loading">
+<div class="spline-loading" id="splineLoading" role="status" aria-live="polite">
+  <div class="spline-loading-inner">
+    <span class="spline-loading-title">LOADING...</span>
+    <div class="spline-loading-line" aria-hidden="true"></div>
+  </div>
+</div>
+<div class="game-shell" id="gameShell">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">✦</div>
+      <div>
+        <h1>THE STAR I AM</h1>
+        <p>CONSTELLATION SCAN · MINI GAME</p>
+      </div>
+    </div>
+    <div class="hud">
+      <div class="hud-box"><span>ROUND</span><strong id="roundText">01 / 04</strong></div>
+      <div class="hud-box"><span>SCORE</span><strong id="scoreText">0000</strong></div>
+      <div class="hud-box"><span>COMBO</span><strong id="comboText">×0</strong></div>
+      <div class="hud-box"><span>TIME</span><strong id="timeText">18.0</strong></div>
+      <div class="hud-box lives-box"><span>LIFE</span><strong id="lifeText">♥♥♥♥</strong></div>
+    </div>
+  </header>
+  <main class="game-area">
+    <section class="space-wrap" id="spaceWrap">
+      <canvas id="space"></canvas>
+      <div class="scanline"></div>
+      <div class="corner-label">STAR MAP // IDENTIFICATION SCAN</div>
+      <div class="time-meter" aria-label="남은 시간"><i id="timeBar"></i></div>
+      <div class="status-pill" id="statusText">스캐너를 움직여 별자리의 형태를 관측하세요.</div>
+      <div class="flash" id="flash"></div>
+    </section>
+    <aside class="side">
+      <div class="panel">
+        <div class="panel-label">NOW OBSERVING</div>
+        <div class="mystery" id="mysteryText">UNKNOWN</div>
+        <div class="mystery-sub">CONSTELLATION SIGNAL</div>
+        <div class="level-tag" id="levelText">쉬움 · 큰 스캐너</div>
+      </div>
+      <div class="panel">
+        <div class="panel-label">SELECT ANSWER</div>
+        <div class="answer-grid" id="answerGrid"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-label">HINT</div>
+        <div class="hint-box" id="hintBox"><div class="hint-empty">힌트는 문제마다 한 번 사용할 수 있습니다.</div></div>
+        <button type="button" class="hint-button" id="hintBtn">힌트 보기 · -30</button>
+      </div>
+      <div class="panel">
+        <div class="progress-title"><span>ZODIAC IDENTIFIED</span><span id="progressText">0 / 4</span></div>
+        <div class="bar"><i id="progressBar"></i></div>
+      </div>
+      <div class="panel">
+        <div class="panel-label" id="collectionLabel">LEVEL CONSTELLATIONS</div>
+        <div class="mini-grid" id="collection"></div>
+      </div>
+      <div class="button-row">
+        <button type="button" id="difficultyBtn">난이도 다시 선택</button>
+        <button type="button" id="backBtn">뒤로가기</button>
+        <button type="button" class="primary" id="restartBtn">다시 시작</button>
+      </div>
+    </aside>
+  </main>
+  <div class="musicBar">
+    <div class="musicCredit">
+      <strong>MUSIC · </strong>
+      <a href="https://pixabay.com/music/instrumental-quiz-thinking-timer-loop-551268/" target="_blank" rel="noopener noreferrer">Quiz Thinking Timer Loop</a>
+      <span> · Vadim_Makes_Sound · Pixabay</span>
+    </div>
+    <button class="musicToggle" id="musicToggle" type="button" aria-pressed="true" aria-label="배경음악 끄기">♪ MUSIC ON</button>
+  </div>
+  <div class="overlay" id="overlay">
+    <div class="modal" id="gameModal"></div>
+  </div>
+</div>
+<script>
+const splineLoading=document.getElementById('splineLoading');
+const splineLoadingStartedAt=performance.now();
+let splineLoadingFailsafe;
+function hideSplineLoading(){
+  if(!splineLoading||splineLoading.dataset.closing)return;
+  splineLoading.dataset.closing='true';
+  const remaining=Math.max(0,500-(performance.now()-splineLoadingStartedAt));
+  setTimeout(()=>{
+    document.body.classList.remove('is-loading');
+    document.body.classList.add('is-ready');
+    splineLoading.classList.add('is-hidden');
+    setTimeout(()=>splineLoading.remove(),700);
+  },remaining);
+}
+splineLoadingFailsafe=setTimeout(hideSplineLoading,6000);
+if(document.readyState==='complete'){
+  clearTimeout(splineLoadingFailsafe);
+  requestAnimationFrame(()=>requestAnimationFrame(hideSplineLoading));
+}else{
+  window.addEventListener('load',()=>{
+    clearTimeout(splineLoadingFailsafe);
+    requestAnimationFrame(()=>requestAnimationFrame(hideSplineLoading));
+  },{once:true});
+}
+(() => {
+  const canvas=document.getElementById('space');
+  const ctx=canvas.getContext('2d');
+  const wrap=document.getElementById('spaceWrap');
+  const roundText=document.getElementById('roundText');
+  const scoreText=document.getElementById('scoreText');
+  const comboText=document.getElementById('comboText');
+  const timeText=document.getElementById('timeText');
+  const lifeText=document.getElementById('lifeText');
+  const timeBar=document.getElementById('timeBar');
+  const statusText=document.getElementById('statusText');
+  const levelText=document.getElementById('levelText');
+  const mysteryText=document.getElementById('mysteryText');
+  const answerGrid=document.getElementById('answerGrid');
+  const hintBox=document.getElementById('hintBox');
+  const hintBtn=document.getElementById('hintBtn');
+  const progressText=document.getElementById('progressText');
+  const progressBar=document.getElementById('progressBar');
+  const collection=document.getElementById('collection');
+  const collectionLabel=document.getElementById('collectionLabel');
+  const overlay=document.getElementById('overlay');
+  const modal=document.getElementById('gameModal');
+  const restartBtn=document.getElementById('restartBtn');
+  const difficultyBtn=document.getElementById('difficultyBtn');
+  const backBtn=document.getElementById('backBtn');
+  const musicToggle=document.getElementById('musicToggle');
+  const flash=document.getElementById('flash');
+  const starSprites={four:new Image(),five:new Image()};
+  const scannerSound=new Audio('별스캐너.mp3');
+  scannerSound.preload='auto';
+  scannerSound.volume=.5;
+  const failSound=new Audio('별자리불통.mp3');
+  failSound.preload='auto';
+  failSound.volume=.34;
+  const bgm=new Audio('보석퀴즈음악.mp3');
+  bgm.preload='auto';
+  bgm.loop=true;
+  bgm.volume=.32;
+  let musicEnabled=true;
+  let loadedSpriteCount=0;
+  let starSpritesReady=false;
+  let starSpritesFailed=false;
+  let scannerAudioUnlocked=false;
+  let scanSoundCooldownUntil=0;
+  let scannedSoundStars=new Set();
+  const startMusic=()=>{
+    if(musicEnabled&&bgm.paused)bgm.play().catch(()=>{});
+  };
+  const updateMusicToggle=()=>{
+    musicToggle.textContent=musicEnabled?'♪ MUSIC ON':'♪ MUSIC OFF';
+    musicToggle.classList.toggle('off',!musicEnabled);
+    musicToggle.setAttribute('aria-pressed',String(musicEnabled));
+    musicToggle.setAttribute('aria-label',musicEnabled?'배경음악 끄기':'배경음악 켜기');
+  };
+  const spriteLoaded=()=>{
+    loadedSpriteCount++;
+    if(loadedSpriteCount!==2)return;
+    starSpritesReady=true;
+    starSpritesFailed=false;
+    if(mode==='idle')showDifficultySelect();
+  };
+  const spriteFailed=()=>{
+    starSpritesReady=false;
+    starSpritesFailed=true;
+    if(mode==='idle')showDifficultySelect();
+  };
+  Object.values(starSprites).forEach(img=>{
+    img.decoding='async';
+    img.onload=spriteLoaded;
+    img.onerror=spriteFailed;
+  });
+  starSprites.four.src='zodiac_pixel_star_4point.png';
+  starSprites.five.src='zodiac_pixel_star_5point.png';
+  const zodiac=[
+    {name:'ARIES',ko:'양자리',viewHeight:360,scale:1,points:[[130,210],[245,165],[365,145],[485,175],[555,230]],major:[0,1],links:[[0,1],[1,2],[2,3],[3,4]],hint:'별들이 완만하게 휘어진 짧은 사슬처럼 이어집니다.'},
+    {name:'TAURUS',ko:'황소자리',viewHeight:360,scale:1,points:[[220,110],[300,170],[350,230],[400,260],[460,290],[520,300],[570,340],[410,310],[450,350]],major:[0,2,4,6],links:[[0,1],[1,2],[2,3],[3,4],[4,5],[5,6],[3,7],[7,8]],hint:'가운데의 V자 모양에서 두 방향으로 긴 뿔처럼 뻗습니다.'},
+    {name:'GEMINI',ko:'쌍둥이자리',viewHeight:520,scale:1.5,points:[[230,150],[305,175],[360,220],[430,265],[500,300],[555,295],[475,345],[430,405],[380,355],[310,325],[245,285],[190,245],[185,205]],major:[0,5,6,7,12],links:[[0,1],[1,2],[2,3],[3,4],[4,5],[4,6],[6,7],[6,8],[8,9],[9,10],[10,11],[11,12],[12,0]],hint:'두 개의 긴 별줄기가 나란히 서 있고 중간이 서로 연결됩니다.'},
+    {name:'CANCER',ko:'게자리',viewHeight:520,scale:1.3,points:[[180,120],[285,230],[330,300],[520,365],[285,430]],major:[0,2],links:[[0,1],[1,2],[2,3],[2,4]],hint:'중앙의 별에서 세 갈래로 뻗어 나가는 Y자형에 가깝습니다.'},
+    {name:'LEO',ko:'사자자리',viewHeight:360,scale:1,points:[[135,245],[195,175],[240,105],[305,80],[345,130],[365,200],[485,230],[565,200],[540,140]],major:[0,8],links:[[0,1],[1,2],[2,3],[3,4],[4,5],[5,0],[5,6],[6,7],[7,8]],hint:'앞쪽에는 낫처럼 굽은 곡선이 있고 뒤쪽에는 삼각형에 가까운 몸통이 붙습니다.'},
+    {name:'VIRGO',ko:'처녀자리',viewHeight:520,scale:1.2,points:[[120,300],[220,250],[260,245],[300,235],[365,140],[410,200],[485,240],[555,205],[610,130],[445,325],[430,420],[335,445],[280,420],[220,455],[360,330]],major:[0,3,4,6,8,10,12],links:[[0,1],[1,2],[2,3],[3,5],[5,4],[5,6],[6,7],[7,8],[6,9],[9,10],[10,11],[11,12],[12,13],[3,14],[14,10],[10,9]],hint:'긴 중심 줄기에서 여러 갈래의 별줄기가 가지처럼 뻗어 나옵니다.'},
+    {name:'LIBRA',ko:'천칭자리',viewHeight:520,scale:1.3,points:[[260,115],[260,220],[170,300],[440,130],[520,270],[445,390],[465,440]],major:[0,1,3,4,5],links:[[0,1],[1,2],[0,3],[3,4],[4,0],[4,5],[5,6]],hint:'밝은 별들이 기울어진 사각형 또는 저울대 같은 윤곽을 만듭니다.'},
+    {name:'SCORPIO',ko:'전갈자리',viewHeight:360,scale:1.3,points:[[180,320],[230,300],[260,270],[240,240],[200,230],[300,330],[360,330],[360,260],[390,210],[430,180],[470,150],[500,170],[470,230],[470,280]],major:[0,5,11,13],links:[[0,1],[1,2],[2,3],[3,4],[2,5],[5,6],[6,7],[7,8],[8,9],[9,10],[10,11],[9,12],[12,13]],hint:'머리 쪽에서 가지가 갈라지고 몸통은 길게 휘어 꼬리 끝에서 다시 올라옵니다.'},
+    {name:'SAGITTARIUS',ko:'사수자리',viewHeight:520,scale:1.2,points:[[135,305],[160,265],[205,225],[290,245],[330,285],[300,340],[250,380],[195,355],[150,330],[285,360],[345,400],[365,250],[390,200],[420,245],[350,135],[300,120],[250,130],[205,105],[390,115],[480,220],[500,145],[520,275],[575,275],[620,220],[500,330],[535,365]],major:[0,2,4,9,10,13,18,20,23],links:[[0,1],[1,2],[2,3],[3,4],[4,5],[5,6],[6,7],[7,8],[8,0],[6,9],[9,10],[3,11],[11,12],[12,13],[13,19],[12,14],[14,15],[15,16],[16,17],[14,18],[19,20],[20,21],[21,22],[22,23],[21,24],[24,25]],hint:'중앙에 찻주전자처럼 보이는 다각형이 있고 양옆으로 별줄기가 뻗습니다.'},
+    {name:'CAPRICORN',ko:'염소자리',viewHeight:360,scale:.9,points:[[155,255],[195,225],[255,250],[350,280],[470,280],[515,235],[560,115],[590,60],[390,180]],major:[0,4,6,7,8],links:[[0,1],[1,8],[8,6],[6,7],[6,5],[5,4],[4,3],[3,2],[2,0]],hint:'넓게 펼쳐진 삼각형 또는 웃는 입처럼 굽은 윤곽이 보입니다.'},
+    {name:'AQUARIUS',ko:'물병자리',viewHeight:360,scale:1.2,points:[[240,150],[380,90],[300,210],[200,190],[160,230],[140,270],[210,310],[280,270],[360,260],[430,280],[260,230]],major:[0,3,6],links:[[3,0],[0,1],[3,4],[4,5],[5,6],[6,7],[7,8],[8,9],[3,10],[10,2]],hint:'윗부분의 작은 지그재그에서 아래쪽으로 긴 별줄기가 물처럼 흘러내립니다.'},
+    {name:'PISCES',ko:'물고기자리',viewHeight:520,scale:1.15,points:[[330,95],[365,78],[405,90],[430,130],[390,165],[345,150],[315,125],[375,215],[430,270],[455,330],[520,405],[570,445],[490,445],[405,430],[315,430],[250,470],[185,430]],major:[1,4,7,8,10,11,14,16],links:[[0,1],[1,2],[2,3],[3,4],[4,5],[5,6],[6,0],[4,7],[7,8],[8,9],[9,10],[10,11],[11,12],[12,13],[13,14],[14,15],[15,16]],hint:'두 개의 작은 고리 모양 별무리가 긴 줄로 서로 연결되어 있습니다.'}
+  ];
+  const difficultySettings={
+    easy:{label:'쉬움',scannerLabel:'큰 스캐너',scannerRadius:124,signs:['ARIES','CANCER','LIBRA','TAURUS']},
+    normal:{label:'중간',scannerLabel:'중간 스캐너',scannerRadius:94,signs:['LEO','CAPRICORN','AQUARIUS','GEMINI']},
+    hard:{label:'어려움',scannerLabel:'작은 스캐너',scannerRadius:68,signs:['SCORPIO','VIRGO','PISCES','SAGITTARIUS']}
+  };
+  const rand=(a,b)=>a+Math.random()*(b-a);
+  const shuffle=arr=>{
+    const copy=[...arr];
+    for(let i=copy.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [copy[i],copy[j]]=[copy[j],copy[i]];
+    }
+    return copy;
+  };
+  const makeRoundOrder=difficulty=>{
+    const settings=difficultySettings[difficulty];
+    const next=shuffle(settings.signs.map(name=>zodiac.findIndex(z=>z.name===name)));
+    if(next.length>1&&next[0]===lastFirst[difficulty]){
+      const swapIndex=1+Math.floor(Math.random()*(next.length-1));
+      [next[0],next[swapIndex]]=[next[swapIndex],next[0]];
+    }
+    lastFirst[difficulty]=next[0];
+    return next;
+  };
+  const MAX_LIVES=4;
+  const HINT_COST=30;
+  let dpr=Math.max(1,Math.min(2,window.devicePixelRatio||1));
+  let W=1,H=1;
+  let bgStars=[];
+  let targets=[];
+  let current=0;
+  let round=1;
+  let order=[];
+  let selectedDifficulty='easy';
+  const lastFirst={easy:-1,normal:-1,hard:-1};
+  let score=0;
+  let combo=0;
+  let bestCombo=0;
+  let lives=MAX_LIVES;
+  let mistakes=0;
+  let timeLimit=18;
+  let timeLeft=timeLimit;
+  let mode='idle';
+  let collected=new Set();
+  let pointer={x:-100,y:-100,active:false};
+  let scannerRadius=124;
+  let hintUsed=false;
+  let hintRevealUntil=0;
+  let revealUntil=0;
+  let lastTime=performance.now();
+  function makeBackground(){
+    bgStars=[];
+    const count=Math.floor((W*H)/3900);
+    for(let i=0;i<count;i++){
+      bgStars.push({x:Math.random()*W,y:Math.random()*H,r:rand(.45,1.25),a:rand(.07,.32),tw:rand(.45,1.4),p:rand(0,Math.PI*2)});
+    }
+  }
+  function buildCollection(){
+    collection.innerHTML='';
+    const settings=difficultySettings[selectedDifficulty];
+    settings.signs.map(name=>zodiac.findIndex(z=>z.name===name)).forEach(i=>{
+      const z=zodiac[i];
+      const el=document.createElement('div');
+      el.className='mini-star'+(collected.has(i)?' done':'');
+      el.textContent=z.ko.replace('자리','');
+      collection.appendChild(el);
+    });
+    collectionLabel.textContent=settings.label+' · 4 CONSTELLATIONS';
+  }
+  function buildAnswers(){
+    answerGrid.innerHTML='';
+    const correct=current;
+    const pool=zodiac.map((_,i)=>i).filter(i=>i!==correct);
+    const wrongs=shuffle(pool).slice(0,3);
+    const choices=shuffle([correct,...wrongs]);
+    choices.forEach(i=>{
+      const btn=document.createElement('button');
+      btn.type='button';
+      btn.className='answer-btn';
+      btn.dataset.index=String(i);
+      btn.innerHTML=`${zodiac[i].ko}<small>${zodiac[i].name}</small>`;
+      btn.addEventListener('click',()=>submitAnswer(i,btn));
+      answerGrid.appendChild(btn);
+    });
+  }
+  function renderHints(){
+    hintBox.innerHTML='';
+    if(!hintUsed){
+      const empty=document.createElement('div');
+      empty.className='hint-empty';
+      empty.textContent='힌트는 문제마다 한 번 사용할 수 있습니다.';
+      hintBox.appendChild(empty);
+    }else{
+      const line=document.createElement('div');
+      line.className='hint-line';
+      line.textContent=zodiac[current].hint;
+      hintBox.appendChild(line);
+    }
+    hintBtn.disabled=mode!=='play'||hintUsed;
+    hintBtn.textContent=hintUsed?'힌트 사용 완료':`힌트 보기 · -${HINT_COST}`;
+  }
+  function hud(){
+    const settings=difficultySettings[selectedDifficulty];
+    roundText.textContent=String(round).padStart(2,'0')+' / 04';
+    scoreText.textContent=String(score).padStart(4,'0');
+    comboText.textContent='×'+combo;
+    timeText.textContent=Math.max(0,timeLeft).toFixed(1);
+    lifeText.textContent='♥'.repeat(lives)+'♡'.repeat(MAX_LIVES-lives);
+    const ratio=timeLimit?Math.max(0,Math.min(1,timeLeft/timeLimit)):1;
+    timeBar.style.width=(ratio*100)+'%';
+    timeBar.classList.toggle('urgent',ratio<.36);
+    levelText.textContent=settings.label+' · '+settings.scannerLabel;
+    const totalRounds=order.length||settings.signs.length;
+    progressText.textContent=collected.size+' / '+totalRounds;
+    progressBar.style.width=(totalRounds?collected.size/totalRounds*100:0)+'%';
+    buildCollection();
+  }
+  function resize(){
+    const r=wrap.getBoundingClientRect();
+    W=Math.max(1,r.width);
+    H=Math.max(320,r.height);
+    canvas.width=Math.round(W*dpr);
+    canvas.height=Math.round(H*dpr);
+    canvas.style.width=W+'px';
+    canvas.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    makeBackground();
+    if(mode==='play'||mode==='reveal')mapConstellation();
+  }
+  function mapConstellation(){
+    const z=zodiac[current];
+    const marginX=Math.max(50,Math.min(72,W*.08));
+    const marginY=Math.max(54,Math.min(78,H*.1));
+    const usableW=Math.max(220,W-marginX*2);
+    const usableH=Math.max(220,H-marginY*2);
+    const xs=z.points.map(p=>p[0]),ys=z.points.map(p=>p[1]);
+    const minX=Math.min(...xs),maxX=Math.max(...xs);
+    const minY=Math.min(...ys),maxY=Math.max(...ys);
+    const sourceCx=(minX+maxX)/2;
+    const sourceCy=(minY+maxY)/2;
+    const boundsW=Math.max(1,maxX-minX);
+    const boundsH=Math.max(1,maxY-minY);
+    const referenceScale=Math.min(usableW/680,usableH/(z.viewHeight||360))*(z.scale||1);
+    const fitScale=Math.min(usableW/boundsW,usableH/boundsH);
+    const shapeScale=Math.min(referenceScale,fitScale);
+    const mapped=z.points.map(p=>({
+      x:W*.5+(p[0]-sourceCx)*shapeScale,
+      y:H*.46+(p[1]-sourceCy)*shapeScale
+    }));
+    const wobble=Math.min(4.5,round*.25);
+    const previous=targets;
+    targets=mapped.map((p,i)=>({
+      x:p.x+(previous[i]?.jitterX??rand(-wobble,wobble)),
+      y:p.y+(previous[i]?.jitterY??rand(-wobble,wobble)),
+      jitterX:previous[i]?.jitterX??rand(-wobble,wobble),
+      jitterY:previous[i]?.jitterY??rand(-wobble,wobble),
+      sprite:previous[i]?.sprite??(z.major.includes(i)?'five':'four'),
+      size:previous[i]?.size??Math.round(z.major.includes(i)?rand(22,25):rand(17,20)),
+      tw:previous[i]?.tw??rand(.75,1.7),
+      phase:previous[i]?.phase??rand(0,Math.PI*2),
+      alpha:previous[i]?.alpha??rand(.80,.96)
+    }));
+  }
+  function buildRound(){
+    current=order[round-1];
+    targets=[];
+    mapConstellation();
+    hintUsed=false;
+    hintRevealUntil=0;
+    scannedSoundStars.clear();
+    scanSoundCooldownUntil=0;
+    timeLimit=Math.max(12.8,18-(round-1)*.38);
+    timeLeft=timeLimit;
+    scannerRadius=difficultySettings[selectedDifficulty].scannerRadius;
+    mysteryText.textContent='UNKNOWN';
+    statusText.textContent='스캐너를 움직여 별자리의 형태를 관측하세요.';
+    buildAnswers();
+    renderHints();
+    hud();
+  }
+  function startGame(difficulty=selectedDifficulty){
+    if(!starSpritesReady)return;
+    if(!difficultySettings[difficulty])return;
+    failSound.pause();
+    failSound.currentTime=0;
+    unlockScannerAudio();
+    startMusic();
+    selectedDifficulty=difficulty;
+    order=makeRoundOrder(selectedDifficulty);
+    round=1;score=0;combo=0;bestCombo=0;lives=MAX_LIVES;mistakes=0;collected.clear();hintUsed=false;hintRevealUntil=0;revealUntil=0;
+    mode='play';
+    overlay.classList.add('hidden');
+    buildRound();
+    lastTime=performance.now();
+  }
+  function getRank(clearAll){
+    if(!clearAll)return'D';
+    if(mistakes===0)return'S';
+    if(mistakes===1)return'A';
+    if(mistakes===2)return'B';
+    return'C';
+  }
+  function showDifficultySelect(){
+    mode='idle';
+    hintRevealUntil=0;
+    scannerSound.pause();
+    scannerSound.currentTime=0;
+    failSound.pause();
+    failSound.currentTime=0;
+    const disabled=starSpritesReady?'':' disabled';
+    const status=starSpritesReady?'원하는 난이도를 선택하세요.':(starSpritesFailed?'PNG 파일을 확인해주세요.':'별 이미지 로딩중…');
+    modal.innerHTML=`
+      <div class="modal-symbol">✦</div>
+      <h2>스캔 난이도 선택</h2>
+      <p>
+        선택한 난이도에 맞는 실제 별자리 <b>4문제</b>가 무작위로 나옵니다.<br>
+        난이도가 높을수록 스캐너의 범위가 작아집니다.
+      </p>
+      <div class="difficulty-grid">
+        <button type="button" class="difficulty-btn" data-difficulty="easy"${disabled}><strong>쉬움</strong><span>큰 스캐너 · 양 · 게 · 천칭 · 황소</span></button>
+        <button type="button" class="difficulty-btn" data-difficulty="normal"${disabled}><strong>중간</strong><span>중간 스캐너 · 사자 · 염소 · 물병 · 쌍둥이</span></button>
+        <button type="button" class="difficulty-btn" data-difficulty="hard"${disabled}><strong>어려움</strong><span>작은 스캐너 · 전갈 · 처녀 · 물고기 · 사수</span></button>
+      </div>
+      <div class="difficulty-status">${status}</div>
+      <button type="button" class="modal-hub" id="selectBackBtn">게임 목록으로 돌아가기</button>`;
+    modal.querySelectorAll('.difficulty-btn').forEach(btn=>{
+      btn.addEventListener('click',()=>startGame(btn.dataset.difficulty));
+    });
+    modal.querySelector('#selectBackBtn').addEventListener('click',goBackToGames);
+    overlay.classList.remove('hidden');
+  }
+  function endGame(clearAll=false,reason=''){
+    mode='over';
+    scannerSound.pause();
+    scannerSound.currentTime=0;
+    const settings=difficultySettings[selectedDifficulty];
+    const rank=getRank(clearAll);
+    const resultText=clearAll?settings.label+' 난이도의 별자리 4개를 모두 식별했습니다.':(reason||'관측이 종료되었습니다.');
+    modal.innerHTML=`
+      <div class="modal-symbol">${clearAll?'✦':'☾'}</div>
+      <h2>${clearAll?'SCAN COMPLETE':'SCAN FAILED'}</h2>
+      <p>${resultText}<br><br>LEVEL <b>${settings.label}</b><br>FINAL SCORE <b>${String(score).padStart(4,'0')}</b><br>BEST COMBO <b>×${bestCombo}</b><br>RANK <b>${rank}</b></p>
+      <div class="modal-actions"><button type="button" id="levelBtn">난이도 선택</button><button type="button" class="primary" id="againBtn">같은 난이도 다시</button></div>
+      <button type="button" class="modal-hub" id="resultBackBtn">게임 목록으로 돌아가기</button>`;
+    overlay.classList.remove('hidden');
+    modal.querySelector('#levelBtn').addEventListener('click',showDifficultySelect);
+    modal.querySelector('#againBtn').addEventListener('click',()=>startGame(selectedDifficulty));
+    modal.querySelector('#resultBackBtn').addEventListener('click',goBackToGames);
+  }
+  function nextRound(){
+    if(round>=order.length){endGame(true);return;}
+    round++;
+    mode='play';
+    buildRound();
+  }
+  function submitAnswer(index,button){
+    if(mode!=='play')return;
+    if(index===current){
+      mode='reveal';
+      collected.add(current);
+      combo++;
+      bestCombo=Math.max(bestCombo,combo);
+      score+=360+Math.round(timeLeft*24)+Math.min(combo,8)*35;
+      mysteryText.textContent=zodiac[current].ko;
+      answerGrid.querySelectorAll('button').forEach(btn=>{
+        btn.disabled=true;
+        if(Number(btn.dataset.index)===current)btn.classList.add('correct');
+      });
+      hintBtn.disabled=true;
+      revealUntil=performance.now()+1250;
+      statusText.textContent='CORRECT ✦ 별자리 신호를 확인했습니다.';
+      flash.className='flash good';
+      void flash.offsetWidth;
+      hud();
+    }else{
+      playFailSound();
+      combo=0;
+      mistakes++;
+      lives=Math.max(0,lives-1);
+      timeLeft=Math.max(0,timeLeft-1.8);
+      score=Math.max(0,score-55);
+      button.classList.add('wrong');
+      button.disabled=true;
+      statusText.textContent='WRONG · LIFE -1 · TIME -1.8';
+      flash.className='flash bad';
+      void flash.offsetWidth;
+      hud();
+      if(lives<=0)endGame(false,'목숨을 모두 잃었습니다.');
+      else if(timeLeft<=0)endGame(false,'시간 안에 별자리를 식별하지 못했습니다.');
+    }
+  }
+  function showHint(){
+    if(mode!=='play'||hintUsed)return;
+    score=Math.max(0,score-HINT_COST);
+    combo=0;
+    hintUsed=true;
+    hintRevealUntil=performance.now()+1000;
+    renderHints();
+    statusText.textContent=`HINT · 연결선 절반을 1초간 표시 · SCORE -${HINT_COST}`;
+    hud();
+  }
+  function goBackToGames(){
+    window.location.href='The_star_I_am_games_mobile.html';
+  }
+  function unlockScannerAudio(){
+    if(scannerAudioUnlocked)return;
+    scannerAudioUnlocked=true;
+    [scannerSound,failSound].forEach(sound=>{
+      const volume=sound.volume;
+      sound.volume=0;
+      sound.currentTime=0;
+      const playback=sound.play();
+      if(!playback){sound.volume=volume;return;}
+      playback.then(()=>{
+        sound.pause();
+        sound.currentTime=0;
+        sound.volume=volume;
+      }).catch(()=>{
+        sound.volume=volume;
+        scannerAudioUnlocked=false;
+      });
+    });
+  }
+  function playScannerSound(){
+    scannerSound.currentTime=0;
+    const playback=scannerSound.play();
+    if(playback)playback.catch(()=>{});
+  }
+  function playFailSound(){
+    scannerSound.pause();
+    scannerSound.currentTime=0;
+    failSound.pause();
+    failSound.currentTime=0;
+    const playback=failSound.play();
+    if(playback)playback.catch(()=>{});
+  }
+  function checkScannerSound(now){
+    if(mode!=='play'||!pointer.active||now<scanSoundCooldownUntil)return;
+    const newlyDetected=[];
+    targets.forEach((target,index)=>{
+      if(scannedSoundStars.has(index))return;
+      if(Math.hypot(target.x-pointer.x,target.y-pointer.y)<=scannerRadius*.76)newlyDetected.push(index);
+    });
+    if(!newlyDetected.length)return;
+    newlyDetected.forEach(index=>scannedSoundStars.add(index));
+    scanSoundCooldownUntil=now+560;
+    playScannerSound();
+  }
+  function pointerPos(e){
+    const r=canvas.getBoundingClientRect();
+    return{x:(e.clientX-r.left)*(W/r.width),y:(e.clientY-r.top)*(H/r.height)};
+  }
+  function scannerVisibility(o){
+    if(mode==='reveal')return 1;
+    if(!pointer.active)return 0;
+    const d=Math.hypot(o.x-pointer.x,o.y-pointer.y);
+    if(d>scannerRadius)return 0;
+    const edge=1-d/scannerRadius;
+    return Math.max(.06,Math.min(1,edge*1.75));
+  }
+  function drawSpriteStar(o,alpha,glow=false){
+    if(!starSpritesReady||alpha<=.01)return;
+    const sprite=starSprites[o.sprite]||starSprites.five;
+    const size=o.size;
+    ctx.save();
+    ctx.imageSmoothingEnabled=false;
+    ctx.globalAlpha=Math.min(1,alpha);
+    if(glow){ctx.shadowBlur=15;ctx.shadowColor='rgba(184,205,255,.92)';}
+    ctx.drawImage(sprite,Math.round(o.x-size/2),Math.round(o.y-size/2),size,size);
+    ctx.restore();
+  }
+  function drawScanner(now){
+    if(!pointer.active||mode!=='play')return;
+    const pulse=.5+.5*Math.sin(now*.004);
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(pointer.x,pointer.y,scannerRadius,0,Math.PI*2);
+    ctx.strokeStyle=`rgba(181,204,255,${.30+pulse*.12})`;
+    ctx.lineWidth=1;
+    ctx.setLineDash([5,7]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    const glow=ctx.createRadialGradient(pointer.x,pointer.y,0,pointer.x,pointer.y,scannerRadius);
+    glow.addColorStop(0,'rgba(143,179,255,.055)');
+    glow.addColorStop(.72,'rgba(143,179,255,.022)');
+    glow.addColorStop(1,'rgba(143,179,255,0)');
+    ctx.fillStyle=glow;
+    ctx.beginPath();ctx.arc(pointer.x,pointer.y,scannerRadius,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(pointer.x-8,pointer.y);ctx.lineTo(pointer.x+8,pointer.y);
+    ctx.moveTo(pointer.x,pointer.y-8);ctx.lineTo(pointer.x,pointer.y+8);
+    ctx.strokeStyle='rgba(224,233,255,.55)';
+    ctx.stroke();
+    ctx.restore();
+  }
+  function draw(now){
+    ctx.clearRect(0,0,W,H);
+    bgStars.forEach(s=>{
+      const tw=.55+.45*Math.sin(now*.0018*s.tw+s.p);
+      const a=s.a*(.35+.65*tw);
+      ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fillStyle=`rgba(235,242,255,${a})`;ctx.fill();
+    });
+    ctx.save();
+    ctx.strokeStyle='rgba(141,164,220,.05)';ctx.lineWidth=1;
+    for(let i=0;i<4;i++){ctx.beginPath();ctx.ellipse(W*.52,H*.48,110+i*74,62+i*40,-.18,0,Math.PI*2);ctx.stroke();}
+    ctx.restore();
+    if(mode==='reveal'){
+      ctx.save();
+      ctx.lineWidth=1.6;
+      ctx.strokeStyle='rgba(223,232,255,.88)';
+      ctx.shadowBlur=11;
+      ctx.shadowColor='rgba(144,181,255,.62)';
+      const links=zodiac[current].links||targets.slice(1).map((_,i)=>[i,i+1]);
+      links.forEach(([a,b])=>{
+        const p1=targets[a],p2=targets[b];
+        if(!p1||!p2)return;
+        ctx.beginPath();
+        ctx.moveTo(p1.x,p1.y);
+        ctx.lineTo(p2.x,p2.y);
+        ctx.stroke();
+      });
+      ctx.restore();
+    }else if(mode==='play'&&now<hintRevealUntil){
+      ctx.save();
+      ctx.lineWidth=1.2;
+      ctx.strokeStyle='rgba(223,232,255,.30)';
+      ctx.shadowBlur=4;
+      ctx.shadowColor='rgba(144,181,255,.24)';
+      const links=zodiac[current].links||targets.slice(1).map((_,i)=>[i,i+1]);
+      const halfLinks=links.slice(0,Math.max(1,Math.ceil(links.length/2)));
+      halfLinks.forEach(([a,b])=>{
+        const p1=targets[a],p2=targets[b];
+        if(!p1||!p2)return;
+        ctx.beginPath();
+        ctx.moveTo(p1.x,p1.y);
+        ctx.lineTo(p2.x,p2.y);
+        ctx.stroke();
+      });
+      ctx.restore();
+      const hintStars=new Set(halfLinks.flat());
+      hintStars.forEach(index=>{
+        const target=targets[index];
+        if(target)drawSpriteStar(target,Math.max(.7,target.alpha*.78));
+      });
+    }
+    targets.forEach(t=>{
+      const vis=scannerVisibility(t);
+      if(vis<=.01)return;
+      const tw=.62+.38*Math.sin(now*.002*t.tw+t.phase);
+      drawSpriteStar(t,t.alpha*vis*(.88+.12*tw),mode==='reveal');
+    });
+    drawScanner(now);
+  }
+  function loop(now){
+    const dt=Math.min(.05,(now-lastTime)/1000);
+    lastTime=now;
+    if(mode==='play'){
+      timeLeft-=dt;
+      checkScannerSound(now);
+      if(timeLeft<=0){
+        timeLeft=0;
+        hud();
+        playFailSound();
+        endGame(false,'시간 안에 별자리를 식별하지 못했습니다.');
+      }else if(Math.floor(timeLeft*10)%2===0){
+        hud();
+      }
+    }else if(mode==='reveal'&&now>=revealUntil){
+      nextRound();
+    }
+    draw(now);
+    requestAnimationFrame(loop);
+  }
+  canvas.addEventListener('pointermove',e=>{pointer={...pointerPos(e),active:true};});
+  canvas.addEventListener('pointerenter',e=>{pointer={...pointerPos(e),active:true};});
+  canvas.addEventListener('pointerdown',e=>{pointer={...pointerPos(e),active:true};});
+  canvas.addEventListener('pointerleave',()=>{pointer={x:-100,y:-100,active:false};});
+  canvas.addEventListener('pointerup',e=>{if(e.pointerType!=='mouse')pointer={x:-100,y:-100,active:false};});
+  canvas.addEventListener('pointercancel',()=>{pointer={x:-100,y:-100,active:false};});
+  restartBtn.addEventListener('click',()=>startGame(selectedDifficulty));
+  difficultyBtn.addEventListener('click',showDifficultySelect);
+  backBtn.addEventListener('click',goBackToGames);
+  hintBtn.addEventListener('click',showHint);
+  musicToggle.addEventListener('click',()=>{
+    musicEnabled=!musicEnabled;
+    if(musicEnabled)startMusic();
+    else bgm.pause();
+    updateMusicToggle();
+  });
+  window.addEventListener('resize',resize,{passive:true});
+  updateMusicToggle();
+  showDifficultySelect();
+  buildCollection();
+  hud();
+  resize();
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

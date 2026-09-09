@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
     <title>The Gem I Am</title>
     <style>
-      @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&display=swap");
+      @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&display=swap");
       * {
         box-sizing: border-box;
         margin: 0;
@@ -43,7 +43,6 @@
         color: inherit;
       }
       button:focus-visible,
-      a:focus-visible,
       input:focus-visible,
       textarea:focus-visible {
         outline: 3px solid #73569e;
@@ -156,7 +155,6 @@
       }
       .start-btn,
       .pill {
-        border: 0;
         border-radius: 999px;
         cursor: pointer;
         background: #ffffff8c;
@@ -904,7 +902,6 @@
           --card-border: 0.08cqw;
           --card-radius: 0.6cqw;
           --card-text-x: 5%;
-          --card-text-y: 2%;
           --card-name-size: clamp(8px, 1.9cqw, 10px);
           --card-month-size: clamp(7px, 1.45cqw, 8px);
           --gather-width: 18%;
@@ -931,11 +928,9 @@
           --explore-size: clamp(10px, 1.8cqw, 12px);
           --nav-y: 32%;
           --nav-size: 44px;
-          --nav-min: 44px;
           --dots-bottom: 6%;
           --dots-gap: 0.6cqw;
           --dot-size: 0.6cqw;
-          --back-y: 3%;
           --back-width: 82px;
           --back-height: 30px;
           --back-pad: 4px 9px;
@@ -969,7 +964,6 @@
           --next-hint-translate: 0;
           --next-hint-size: clamp(8px, 1.35cqw, 9px);
           --menu-y: 4%;
-          --menu-size: 44px;
           --menu-pad: 10px;
           --panel-width: min(42cqw, 22rem);
           --panel-pad: 14px 12px;
@@ -1002,11 +996,6 @@
           left: var(--lx);
           top: var(--ly);
           transform: rotate(var(--lr));
-        }
-        .menu-item,
-        .back-link,
-        .save-note {
-          min-height: 44px;
         }
         .delete-note {
           min-height: 40px;
@@ -1052,7 +1041,9 @@
             탄생석 컬렉션</button
           ><button type="button" class="menu-item" id="openNotes">탄생석 기록</button
           ><button type="button" class="menu-item" data-go="Birthstone_Fortune_mobile.html">
-            카드 운세 보기</button>
+            카드 운세 보기</button
+          ><button type="button" class="menu-item" data-go="The_gem_I_am_games_mobile.html">
+            미니게임</button>
         </section>
         <section class="screen hidden" id="notesScreen">
           <button type="button" class="back-link" id="backMenu">← 메뉴로</button>
@@ -1129,9 +1120,7 @@
       const $ = (s) => document.querySelector(s),
         $$ = (s) => [...document.querySelectorAll(s)],
         body = document.body;
-      // prettier-ignore
       $("#sound").innerHTML=`<svg viewBox="0 0 120 120" aria-hidden="true"><defs><linearGradient id="waveGradient" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#d9c9ff"/><stop offset=".52" stop-color="#b9ddff"/><stop offset="1" stop-color="#fff"/></linearGradient></defs><path id="waveShape" d="M60 18C74 18 84 24 91 34c8 11 11 22 10 34-1 14-8 26-20 33-12 7-27 8-39 3-12-5-21-15-24-28-3-13-1-27 6-38 7-11 20-19 36-20Z" fill="none"/><use href="#waveShape" class="wave w1"/><use href="#waveShape" class="wave w2" opacity=".8"/><use href="#waveShape" class="wave w3" opacity=".55"/><use href="#waveShape" class="wave w4" opacity=".35"/></svg><span class="sound-state" id="soundState" data-active="false">MUSIC OFF</span>`;
-      // prettier-ignore
       const stones=[
       ["Garnet_mobile_info.html","GARNET","January","신뢰 · 보호","깊은 진홍빛 가넷은 헌신과 흔들리지 않는 용기를 상징합니다.","./가넷2.jpg","Garnet"],
       ["Amethyst_mobile_info.html","AMETHYST","February","명료함 · 평온","고요한 보랏빛 자수정은 맑은 생각과 평온한 지혜를 상징합니다.","./자수정2.jpg","Amethyst"],
@@ -1164,7 +1153,7 @@
       cardsBox.innerHTML = stones
         .map(
           (s, i) =>
-            `<button type="button" class="card" style="--x:${fan[i][0]}%;--y:${fan[i][1]}%;--r:${fan[i][2]}deg;--lx:${fan[i][3]}%;--ly:${fan[i][4]}%;--lr:${fan[i][5]}deg" data-i="${i}" aria-label="${s[6]} ${s[2]} 카드 자세히 보기" disabled><img class="card-img" src="${s[5]}" alt="" decoding="async"><span class="card-text"><span class="card-name">${s[6]}</span><span class="card-month">${s[2]}</span></span></button>`,
+            `<button type="button" class="card" style="--x:${fan[i][0]}%;--y:${fan[i][1]}%;--r:${fan[i][2]}deg;--lx:${fan[i][3]}%;--ly:${fan[i][4]}%;--lr:${fan[i][5]}deg" aria-label="${s[6]} ${s[2]} 카드 자세히 보기" disabled><img class="card-img" src="${s[5]}" alt="" decoding="async"><span class="card-text"><span class="card-name">${s[6]}</span><span class="card-month">${s[2]}</span></span></button>`,
         )
         .join("");
       const cards = $$(".card"),
@@ -1241,12 +1230,7 @@
           card.className = "card";
           card.disabled = ![index, prev, next].includes(i);
           card.setAttribute("aria-current", i === index ? "true" : "false");
-          card.style.removeProperty("left");
-          card.style.removeProperty("top");
-          card.style.removeProperty("width");
-          card.style.removeProperty("opacity");
           card.style.removeProperty("z-index");
-          card.style.removeProperty("transform");
           if (i === index) card.classList.add("show-center");
           else if (i === prev) card.classList.add("show-prev");
           else if (i === next) card.classList.add("show-next");
@@ -1269,13 +1253,10 @@
           requestAnimationFrame(() => showcase.classList.remove("text-hidden")),
         );
       };
-      const go = (dir) => {
-        if (animating || !["showcase", "detail"].includes(body.dataset.mode))
-          return;
+      const selectCard = (nextIndex) => {
         animating = true;
         clearTimeout(textTimer);
         showcase.classList.add("text-hidden");
-        const nextIndex = (current + dir + cards.length) % cards.length;
         play(sounds.hover, 0.35);
         textTimer = setTimeout(() => {
           current = nextIndex;
@@ -1283,6 +1264,11 @@
           revealText();
         }, 140);
         setTimeout(() => (animating = false), 680);
+      };
+      const go = (dir) => {
+        if (animating || !["showcase", "detail"].includes(body.dataset.mode))
+          return;
+        selectCard((current + dir + cards.length) % cards.length);
       };
       $("#startBtn").onclick = () => {
         if (animating || body.dataset.mode !== "fan") return;
@@ -1314,17 +1300,7 @@
       $("#indicators").onclick = (e) => {
         const dot = e.target.closest(".dot");
         if (!dot || body.dataset.mode !== "showcase" || animating) return;
-        animating = true;
-        clearTimeout(textTimer);
-        showcase.classList.add("text-hidden");
-        const nextIndex = +dot.dataset.i;
-        play(sounds.hover, 0.35);
-        textTimer = setTimeout(() => {
-          current = nextIndex;
-          update(current);
-          revealText();
-        }, 140);
-        setTimeout(() => (animating = false), 680);
+        selectCard(+dot.dataset.i);
       };
       $("#prev").onclick = $("#miniPrev").onclick = () => go(-1);
       $("#next").onclick = $("#miniNext").onclick = () => go(1);
@@ -1372,7 +1348,6 @@
         cards.forEach((card, i) => {
           card.className = "card";
           card.style.setProperty("--gather-rot", `${(i - 5.5) * 2}deg`);
-          card.style.opacity = 1;
           card.style.zIndex = 20 + i;
         });
         body.dataset.mode = "returning";
@@ -1381,11 +1356,9 @@
           cards.forEach((card) => {
             card.disabled = true;
             card.setAttribute("aria-current", "false");
-            ["left", "top", "width", "opacity", "z-index", "transform"].forEach(
-              (p) => card.style.removeProperty(p),
-            );
+            card.style.removeProperty("z-index");
           });
-          Object.assign($("#startCta").style, { display: "flex", opacity: 1 });
+          $("#startCta").style.opacity = 1;
           $("#bigTitle").style.opacity = "";
           $("#centerCopy").style.opacity = "";
           animating = false;
