@@ -334,7 +334,7 @@ button{font:inherit}
   .topbar{padding:10px 11px;min-height:62px}
   .logo small{display:none}.logo h1{font-size:16px}
   .stats{gap:3px}.stat{min-width:48px;padding:6px 4px;font-size:7px}.stat b{font-size:13px}
-  #intro,#characterSelect,#result{padding:15px 12px}
+  #intro,#characterSelect,#result{padding:15px 12px;align-items:flex-start}
   .title{font-size:44px}
   .characterbox .title{font-size:36px}
   .months{grid-template-columns:repeat(4,1fr);gap:6px}
@@ -1129,8 +1129,12 @@ function endGame(){
   else if(mistakeCount===3)grade="C";
 
   const key=`gemrush_best_${selected.n}_${selectedDifficulty}`;
-  const old=Number(localStorage.getItem(key)||0);
-  if(score>old)localStorage.setItem(key,String(score));
+  let old=0;
+  try{
+    const savedScore=Number(localStorage.getItem(key));
+    old=Number.isFinite(savedScore)?savedScore:0;
+    if(score>old)localStorage.setItem(key,String(score));
+  }catch{}
   const best=Math.max(old,score);
 
   $("#grade").textContent=grade;

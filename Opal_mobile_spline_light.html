@@ -1878,10 +1878,196 @@
 
     }
 
-  </style>
+    .loading-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 100000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      pointer-events: auto;
+      background: rgba(244, 235, 255, .72);
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
+      opacity: 1;
+      visibility: visible;
+      transition: opacity .7s ease, visibility .7s ease
+    }
+
+    .loading-overlay.hide {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none
+    }
+
+    .loading-orb {
+      position: relative;
+      width: 4rem;
+      height: 4rem;
+      border-radius: 50%;
+      border: 1px solid rgba(132, 150, 185, .16);
+      background: radial-gradient(circle, rgba(255, 255, 255, .8), rgba(228, 243, 255, .12) 60%, rgba(246, 207, 225, .02));
+      box-shadow: 0 0 26px rgba(159, 216, 247, .22), inset 0 0 14px rgba(255, 255, 255, .5);
+      animation: orbSpin 4s linear infinite, orbFloat 3.6s ease-in-out infinite
+    }
+
+    .orb-dot {
+      position: absolute;
+      width: .42rem;
+      height: .42rem;
+      border-radius: 50%;
+      background: radial-gradient(circle, #fff, #9FD8F7 46%, rgba(246, 207, 225, .1));
+      box-shadow: 0 0 10px rgba(159, 216, 247, .8)
+    }
+
+    .orb-dot-1 {
+      top: -.12rem;
+      left: 50%;
+      transform: translateX(-50%)
+    }
+
+    .orb-dot-2 {
+      right: .4rem;
+      bottom: .8rem
+    }
+
+    .orb-dot-3 {
+      left: .45rem;
+      bottom: .72rem
+    }
+
+    @keyframes orbSpin {
+      from {
+        transform: rotate(0)
+      }
+
+      to {
+        transform: rotate(360deg)
+      }
+    }
+
+    @keyframes orbFloat {
+
+      0%,
+      100% {
+        translate: 0 0
+      }
+
+      50% {
+        translate: 0 -8px
+      }
+    }
+
+    .loading-copy-box {
+      padding: .9rem 1.3rem;
+      min-width: min(86vw, 32rem);
+      max-width: min(94vw, 42rem);
+      border-radius: 1.1rem;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, .62);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+      text-align: center
+    }
+
+    .loading-kicker {
+      margin-bottom: .4rem;
+      font-family: 'Jost', sans-serif;
+      font-size: clamp(.6rem, .8vw, .7rem);
+      letter-spacing: .24em;
+      color: var(--gem-primary)
+    }
+
+    .loading-copy {
+      position: relative;
+      height: 1.7em;
+      color: var(--deep);
+      font-size: clamp(.95rem, 1.4vw, 1.18rem);
+      line-height: 1.45;
+      letter-spacing: .04em;
+      white-space: nowrap;
+      overflow: hidden
+    }
+
+    .loading-copy span {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transform: translateY(8px);
+      animation: loadingSentence 6s infinite
+    }
+
+    .loading-copy span:nth-child(1) {
+      animation-delay: 0s
+    }
+
+    .loading-copy span:nth-child(2) {
+      animation-delay: 2s
+    }
+
+    .loading-copy span:nth-child(3) {
+      animation-delay: 4s
+    }
+
+    @keyframes loadingSentence {
+      0% {
+        opacity: 0;
+        transform: translateY(8px)
+      }
+
+      10% {
+        opacity: 1;
+        transform: translateY(0)
+      }
+
+      30% {
+        opacity: 1;
+        transform: translateY(0)
+      }
+
+      40% {
+        opacity: 0;
+        transform: translateY(-8px)
+      }
+
+      100% {
+        opacity: 0;
+        transform: translateY(-8px)
+      }
+    }
+
+    @media (max-width: 640px) {
+      .loading-copy {
+        font-size: .9rem;
+        white-space: normal;
+        height: 2.8em
+      }
+    }
+
+</style>
 </head>
 
 <body>
+  <div id="splineLoading" class="loading-overlay" role="status" aria-live="polite" aria-label="오팔 3D 화면 불러오는 중">
+    <div class="loading-orb" aria-hidden="true">
+      <span class="orb-dot orb-dot-1"></span>
+      <span class="orb-dot orb-dot-2"></span>
+      <span class="orb-dot orb-dot-3"></span>
+    </div>
+    <div class="loading-copy-box">
+      <div class="loading-kicker">AWAKENING</div>
+      <div class="loading-copy">
+        <span>오팔의 공간을 준비하고 있어요</span>
+        <span>빛과 색, 그리고 이야기를 불러오는 중</span>
+        <span>잠시 후 3D 보석이 나타납니다</span>
+      </div>
+    </div>
+  </div>
   <div class="viewport">
     <div class="game-container">
       <div class="top-nav" id="topNav">
@@ -1901,7 +2087,7 @@
       <script src="https://unpkg.com/@splinetool/viewer@1.12.98/build/spline-viewer.js" type="module"></script>
       <div class="spline-stage" id="splineStage">
         <div class="center-light-spline" id="centerLightSpline" aria-label="탭하면 오팔 3D 장면 열기, 옆으로 스와이프하면 무드 열기" role="button" tabindex="0">
-          <spline-viewer url="https://prod.spline.design/3QEu1xT0PKPTmfAT/scene.splinecode" loading="lazy"></spline-viewer>
+          <spline-viewer url="https://prod.spline.design/3QEu1xT0PKPTmfAT/scene.splinecode" loading="eager"></spline-viewer>
         </div>
         <div class="gem-product-layout">
           <div class="product-title-block">
@@ -2080,6 +2266,23 @@
     const zoomTitle = $('#productZoomTitle');
     const zoomCopy = $('#productZoomCopy');
     const clickSound = $('#clickSound');
+    const splineLoader = $('#splineLoading');
+    const splineViewer = $('#centerLightSpline spline-viewer');
+    let splineLoaderDone = false;
+
+    function hideSplineLoader() {
+      if (splineLoaderDone) return;
+      splineLoaderDone = true;
+      splineLoader.classList.add('hide');
+      setTimeout(() => splineLoader.remove(), 800);
+    }
+
+    function revealSplineScene() {
+      requestAnimationFrame(() => requestAnimationFrame(hideSplineLoader));
+    }
+
+    splineViewer.addEventListener('load-complete', revealSplineScene, { once: true });
+    setTimeout(hideSplineLoader, 15000);
     const mobileMood = $('#mobileMood');
     const mobileMoodShell = $('#mobileMoodShell');
     const mobileMoodCharacter = $('#mobileMoodCharacter');
