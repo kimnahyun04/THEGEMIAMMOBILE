@@ -286,6 +286,9 @@ if(document.readyState==='complete'){
   const failSound=new Audio('별자리불통.mp3');
   failSound.preload='auto';
   failSound.volume=.34;
+  const correctSound=new Audio('별자리통과(1).mp3');
+  correctSound.preload='auto';
+  correctSound.volume=.28;
   const bgm=new Audio('보석퀴즈음악.mp3');
   bgm.preload='auto';
   bgm.loop=true;
@@ -294,7 +297,7 @@ if(document.readyState==='complete'){
   let loadedSpriteCount=0;
   let starSpritesReady=false;
   let starSpritesFailed=false;
-  let scannerAudioUnlocked=false;
+  let effectsUnlocked=false;
   let scanSoundCooldownUntil=0;
   let scannedSoundStars=new Set();
   const startMusic=()=>{
@@ -340,9 +343,9 @@ if(document.readyState==='complete'){
     {name:'PISCES',ko:'물고기자리',viewHeight:520,scale:1.15,points:[[330,95],[365,78],[405,90],[430,130],[390,165],[345,150],[315,125],[375,215],[430,270],[455,330],[520,405],[570,445],[490,445],[405,430],[315,430],[250,470],[185,430]],major:[1,4,7,8,10,11,14,16],links:[[0,1],[1,2],[2,3],[3,4],[4,5],[5,6],[6,0],[4,7],[7,8],[8,9],[9,10],[10,11],[11,12],[12,13],[13,14],[14,15],[15,16]],hint:'두 개의 작은 고리 모양 별무리가 긴 줄로 서로 연결되어 있습니다.'}
   ];
   const difficultySettings={
-    easy:{label:'쉬움',scannerLabel:'큰 스캐너',scannerRadius:124,signs:['ARIES','CANCER','LIBRA','TAURUS']},
-    normal:{label:'중간',scannerLabel:'중간 스캐너',scannerRadius:94,signs:['LEO','CAPRICORN','AQUARIUS','GEMINI']},
-    hard:{label:'어려움',scannerLabel:'작은 스캐너',scannerRadius:68,signs:['SCORPIO','VIRGO','PISCES','SAGITTARIUS']}
+    easy:{label:'쉬움',scannerLabel:'큰 스캐너',scannerRadius:124,timeRate:1,signs:['ARIES','CANCER','LIBRA','TAURUS']},
+    normal:{label:'중간',scannerLabel:'중간 스캐너',scannerRadius:94,timeRate:1.12,signs:['LEO','CAPRICORN','AQUARIUS','GEMINI']},
+    hard:{label:'어려움',scannerLabel:'작은 스캐너',scannerRadius:68,timeRate:1.25,signs:['SCORPIO','VIRGO','PISCES','SAGITTARIUS']}
   };
   const rand=(a,b)=>a+Math.random()*(b-a);
   const shuffle=arr=>{
@@ -524,7 +527,9 @@ if(document.readyState==='complete'){
     if(!difficultySettings[difficulty])return;
     failSound.pause();
     failSound.currentTime=0;
-    unlockScannerAudio();
+    correctSound.pause();
+    correctSound.currentTime=0;
+    unlockEffectAudio();
     startMusic();
     selectedDifficulty=difficulty;
     order=makeRoundOrder(selectedDifficulty);
@@ -548,6 +553,8 @@ if(document.readyState==='complete'){
     scannerSound.currentTime=0;
     failSound.pause();
     failSound.currentTime=0;
+    correctSound.pause();
+    correctSound.currentTime=0;
     const disabled=starSpritesReady?'':' disabled';
     const status=starSpritesReady?'원하는 난이도를 선택하세요.':(starSpritesFailed?'PNG 파일을 확인해주세요.':'별 이미지 로딩중…');
     modal.innerHTML=`
@@ -597,6 +604,7 @@ if(document.readyState==='complete'){
   function submitAnswer(index,button){
     if(mode!=='play')return;
     if(index===current){
+      playCorrectSound();
       mode='reveal';
       collected.add(current);
       combo++;
@@ -643,10 +651,10 @@ if(document.readyState==='complete'){
   function goBackToGames(){
     window.location.href='The_star_I_am_games_mobile.html';
   }
-  function unlockScannerAudio(){
-    if(scannerAudioUnlocked)return;
-    scannerAudioUnlocked=true;
-    [scannerSound,failSound].forEach(sound=>{
+  function unlockEffectAudio(){
+    if(effectsUnlocked)return;
+    effectsUnlocked=true;
+    [scannerSound,failSound,correctSound].forEach(sound=>{
       const volume=sound.volume;
       sound.volume=0;
       sound.currentTime=0;
@@ -658,7 +666,7 @@ if(document.readyState==='complete'){
         sound.volume=volume;
       }).catch(()=>{
         sound.volume=volume;
-        scannerAudioUnlocked=false;
+        effectsUnlocked=false;
       });
     });
   }
@@ -670,9 +678,21 @@ if(document.readyState==='complete'){
   function playFailSound(){
     scannerSound.pause();
     scannerSound.currentTime=0;
+    correctSound.pause();
+    correctSound.currentTime=0;
     failSound.pause();
     failSound.currentTime=0;
     const playback=failSound.play();
+    if(playback)playback.catch(()=>{});
+  }
+  function playCorrectSound(){
+    scannerSound.pause();
+    scannerSound.currentTime=0;
+    failSound.pause();
+    failSound.currentTime=0;
+    correctSound.pause();
+    correctSound.currentTime=0;
+    const playback=correctSound.play();
     if(playback)playback.catch(()=>{});
   }
   function checkScannerSound(now){
@@ -796,7 +816,7 @@ if(document.readyState==='complete'){
     const dt=Math.min(.05,(now-lastTime)/1000);
     lastTime=now;
     if(mode==='play'){
-      timeLeft-=dt;
+      timeLeft-=dt*difficultySettings[selectedDifficulty].timeRate;
       checkScannerSound(now);
       if(timeLeft<=0){
         timeLeft=0;

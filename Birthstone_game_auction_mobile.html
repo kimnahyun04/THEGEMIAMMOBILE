@@ -158,6 +158,18 @@ button{font:inherit}
 .guessFeedback.good{color:var(--good)}
 .guessFeedback.mid{color:var(--warn)}
 .guessFeedback.bad{color:var(--bad)}
+.guessResultCard{
+  display:none;min-height:576px;place-items:center;text-align:center;padding:24px
+}
+.guessMain.finished>.guessTop,
+.guessMain.finished>.guessShowcase,
+.guessMain.finished>.guessClues,
+.guessMain.finished>.guessControlBox{display:none}
+.guessMain.finished>.guessResultCard{display:grid}
+.guessResultInner{width:min(620px,100%)}
+.guessResultInner h2{margin:10px 0 8px;font:500 clamp(28px,5vw,44px)/1 Georgia,serif;color:#513c49}
+.guessResultInner p{margin:0 auto 18px;max-width:550px;color:var(--muted);font-size:12px;line-height:1.7}
+.guessResultStats{grid-template-columns:repeat(2,minmax(0,1fr))}
 .guessSide h3{margin:0 0 10px;font:500 18px Georgia,serif}
 .scoreBox{
   padding:12px;border:1px solid rgba(255,255,255,.09);border-radius:14px;background:rgba(0,0,0,.12);margin-bottom:10px
@@ -743,6 +755,23 @@ body.mobile-version{display:block;min-height:100dvh;padding:0;overflow-x:hidden}
 
         <div class="guessFeedback" id="guessFeedback">아직 가격을 제출하지 않았습니다.</div>
       </div>
+
+      <div class="guessResultCard" id="guessResultCard" aria-live="polite">
+        <div class="guessResultInner">
+          <div class="eyebrow">가격 감정 완료</div>
+          <div class="rank" id="guessFinalRank">D</div>
+          <h2 id="guessFinalTitle">초보 감정사</h2>
+          <p id="guessFinalText"></p>
+          <div class="resultStats guessResultStats">
+            <div class="rs">총점<b id="guessFinalScore">0 / 500점</b></div>
+            <div class="rs">최소 오차<b id="guessFinalBest">—</b></div>
+          </div>
+          <div class="actions">
+            <button class="primary" id="retryGuessBtn">다시 도전</button>
+            <button class="ghost" id="backFromGuessResult">게임 선택</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <aside class="guessSide">
@@ -1109,6 +1138,7 @@ function startGuessGame(){
   guessScore=0;
   guessBest=999;
   guessAnswered=false;
+  $(".guessMain").classList.remove("finished");
   $("#roundHistory").innerHTML='<div class="hist">첫 번째 보석의 가격을 맞혀보세요.</div>';
   $("#priceGuessScore").textContent="0 / 500";
   $("#priceGuessBest").textContent="—";
@@ -1207,16 +1237,23 @@ function nextGuessRound(){
 }
 
 function finishGuessGame(){
-  let rank="D",label="NOVICE APPRAISER";
-  if(guessScore>=450){rank="S";label="MASTER APPRAISER"}
-  else if(guessScore>=375){rank="A";label="SHARP EYE"}
-  else if(guessScore>=275){rank="B";label="GEM COLLECTOR"}
-  else if(guessScore>=150){rank="C";label="APPRAISER TRAINEE"}
+  let rank="D",label="초보 감정사";
+  if(guessScore>=450){rank="S";label="보석 감정의 달인"}
+  else if(guessScore>=375){rank="A";label="예리한 안목"}
+  else if(guessScore>=275){rank="B";label="보석 수집가"}
+  else if(guessScore>=150){rank="C";label="감정사 연습생"}
 
   $("#guessTitle").textContent=`${rank} · ${label}`;
   $("#guessRoundPill").textContent="완료";
   $("#guessFeedback").className="guessFeedback "+(["S","A"].includes(rank)?"good":["B","C"].includes(rank)?"mid":"bad");
   $("#guessFeedback").textContent=`5문제 완료 · 총 ${guessScore} / 500점 · 최고 오차 ${guessBest===999?"—":guessBest+"%"}`;
+  $("#guessFinalRank").textContent=rank;
+  $("#guessFinalTitle").textContent=label;
+  $("#guessFinalText").textContent=`5문제를 모두 마쳤습니다. 총 ${guessScore}점으로 ${rank}등급을 획득했어요.`;
+  $("#guessFinalScore").textContent=`${guessScore} / 500점`;
+  $("#guessFinalBest").textContent=guessBest===999?"—":guessBest+"%";
+  $(".guessMain").classList.add("finished");
+  $("#guessGame").scrollTop=0;
   $("#lockPriceGuess").disabled=true;
   $("#nextPriceGuess").disabled=true;
 }
@@ -1438,6 +1475,8 @@ $("#auctionModeBtn").addEventListener("click",()=>show("difficulty"));
 $("#easyModeBtn").addEventListener("click",()=>startGame("easy"));
 $("#hardModeBtn").addEventListener("click",()=>startGame("hard"));
 $("#guessModeBtn").addEventListener("click",startGuessGame);
+$("#retryGuessBtn").addEventListener("click",startGuessGame);
+$("#backFromGuessResult").addEventListener("click",()=>show("start"));
 $("#backFromAuctionResult").addEventListener("click",()=>show("start"));
 
 $("#priceGuessRange").addEventListener("input",()=>{
