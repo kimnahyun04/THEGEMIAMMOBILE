@@ -205,7 +205,8 @@
       }
       .card {
         position: absolute;
-        left: var(--x);
+        /* The 12-card fan spans 102.5% including the card width. */
+        left: calc(var(--x) - 1.25%);
         top: var(--y);
         z-index: 3;
         width: var(--card-width, 24.5%);
